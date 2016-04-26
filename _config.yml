@@ -3,11 +3,11 @@
 ## Source: https://github.com/hexojs/hexo/
 
 # Site
-title: Hexo
+title: Tutu's Blog
 subtitle:
 description:
 author: Tu Fei
-language: zh
+language: zh-CN
 timezone: Asia/Shanghai
 
 # URL
@@ -64,6 +64,8 @@ pagination_dir: page
 ## Plugins: https://hexo.io/plugins/
 ## Themes: https://hexo.io/themes/
 theme: pacman
+
+disqus_shortname: tutudevcom
 
 # Deployment
 ## Docs: https://hexo.io/docs/deployment.html
