@@ -2,8 +2,8 @@
 menu:
   Home: /
   Archives: /archives
-  Categories: /categories
-  Tags: /tags
+  # Categories: /categories
+  # Tags: /tags
 ## you can create `tags` and `categories` folders in `../source`.
 ## And create a `index.md` file in each of them.
 ## set `front-matter`as
@@ -66,7 +66,7 @@ author:
   twitter:    ## e.g. yangjiansky for https://twitter.com/yangjiansky
   github: tutumagi     ## e.g. A-limon for https://github.com/A-limon
   facebook:   ## e.g. yangjian for https://favebook.com/yangjian
-  tsina:      ## e.g. 1664838973  Your weibo ID,It will be used in share button.
+  tsina: 3029205243     ## e.g. 1664838973  Your weibo ID,It will be used in share button.
   linkedin:   ## e.g. in/jeffweiner08 for https://www.linkedin.com/in/jeffweiner08
 
 #### Comment
@@ -83,9 +83,9 @@ jiathis:
 
 #### Analytics
 google_analytics:
-  enable: false
-  id:   ## e.g. UA-1766729-8 your google analytics ID.
-  site: ## e.g. yangjian.me your google analytics site or set the value as auto.
+  enable: true
+  id: UA-76952316-1  ## e.g. UA-1766729-8 your google analytics ID.
+  site: auto ## e.g. yangjian.me your google analytics site or set the value as auto.
 ## You MUST upgrade to Universal Analytics first!
 ## https://developers.google.com/analytics/devguides/collection/upgrade/?hl=zh_CN
 
@@ -99,3 +99,5 @@ google_cse:
 ## layout: search
 ## title: search
 ## ---
+highlight:
+  enable: true

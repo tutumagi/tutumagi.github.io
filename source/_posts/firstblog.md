@@ -25,7 +25,7 @@ tags:
 
 1. 从零开始  
      
-     > [**从域名到Github账号到新建博客模板**](http://cnfeat.com/blog/2014/05/10/how-to-build-a-blog/)全方位的介绍，并且在博客结尾有许多其他博主写的相关搭建经验的文章 
+     > [从域名到Github账号到新建博客模板](http://cnfeat.com/blog/2014/05/10/how-to-build-a-blog/)全方位的介绍，并且在博客结尾有许多其他博主写的相关搭建经验的文章 
 2. [GitHub+Hexo+绑定自定义域名](http://blog.zfan.me/2015/09/03/%E4%B8%BA%E9%83%A8%E7%BD%B2%E5%9C%A8Github%E4%B8%8A%E7%9A%84Hexo%E5%8D%9A%E5%AE%A2%E7%BB%91%E5%AE%9A%E4%B8%AA%E6%80%A7%E5%9F%9F%E5%90%8D/)  
 >添加CNAME文件到 ./sources/
 
