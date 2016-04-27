@@ -109,18 +109,18 @@ RCT_EXPORT_METHOD(drawSomethingWithCGRect:(id )rectId)
  	同时: ModuleClass对应的Json格式的config数据:
  	![导出的json格式](http://7xsw3s.com2.z0.glb.clouddn.com/1460904823619)
 
-	 	```json
-	 	[
-		  "CalendarManager",
-		  {
-		    "firstDayOfTheWeek": "Monday"
-		  },
-		  [
-		    "addEvent",
-		    "findEvents"
-		  ]
-		]
-		```
+    ```json
+    [
+      "CalendarManager",
+      {
+        "firstDayOfTheWeek": "Monday"
+      },
+      [
+        "addEvent",
+        "findEvents"
+      ]
+    ]
+    ```
 4. 注入JavaScript:  
 
 	```objc	
@@ -149,8 +149,8 @@ JSX  ->   Virtual DOM   ->   RCTUIManager(shadow queue)  -> Native View (main qu
 首先`babel`会翻译`JSX`为标准的`ES5`, React的组件模型实现了一套`Virtual DOM`，会比对当前正在显示的`Virtual DOM` 和将要显示的`Virtual DOM`，做一个diff，然后将diff后的数据组装成消息结构通过`JSBridge`发送给`Native`端，这时Native在`shadow queue`(非主线程)将消息组装成一个`block`并push到队列里去，然后在一个恰当的时机flush所有的`UI block`，此时是在主线程中调用。
 
 ## 看看别人怎么说
-### [一个前端工程师的看法](http://div.io/topic/851?page=1#3453)  
-### [知乎上面的讨论](https://www.zhihu.com/question/27852694)
+[一个前端工程师的看法](http://div.io/topic/851?page=1#3453)  
+[知乎上面的讨论](https://www.zhihu.com/question/27852694)
 
 ## 学习曲线
 [JavaScript](https://developer.mozilla.org/en-US/docs/Web/JavaScript)  
