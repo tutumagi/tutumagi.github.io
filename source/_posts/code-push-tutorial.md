@@ -134,7 +134,7 @@ category:
 
         ```
         $ code-push deployment add APP_task test
-    Successfully added the "test" deployment with key "2ZKF6OuLvf0BPhOKfs0b3IiSHjFJEk2EyF5--" to the "APP_task" app.
+        Successfully added the "test" deployment with key "2ZKF6OuLvf0BPhOKfs0b3IiSHjFJEk2EyF5--" to the "APP_task" app.
         ```
     查看APP的环境信息
 
