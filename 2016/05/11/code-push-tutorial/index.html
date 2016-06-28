@@ -1,0 +1,433 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Code-Push使用经验(仅iOS) | Tutu&#39;s Blog</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=3, minimum-scale=1">
+    
+    <meta name="author" content="Tu Fei">
+    
+    <meta name="description" content="安装react-native-code-push参考React-native-code-push README  
+
+安装 npm install react-native-code-push --save 参数 –save 在安装的同时，把信息写入package.json 文件的项目路径 检查: ">
+    
+    
+    
+    
+    
+    <link rel="icon" href="/img/favicon.ico">
+    
+    
+    <link rel="apple-touch-icon" href="/img/pacman.jpg">
+    <link rel="apple-touch-icon-precomposed" href="/img/pacman.jpg">
+    
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+  <body>
+    <header>
+      <div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.svg" alt="Tutu&#39;s Blog" title="Tutu&#39;s Blog"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Tutu&#39;s Blog">Tutu&#39;s Blog</a></h1>
+				<h2 class="blog-motto"></h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					
+						<li><a href="/">Home</a></li>
+					
+						<li><a href="/archives">Archives</a></li>
+					
+					<li>
+					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="text" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:tutudev.com">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2016/05/11/code-push-tutorial/" title="Code-Push使用经验(仅iOS)" itemprop="url">Code-Push使用经验(仅iOS)</a>
+  </h1>
+  <p class="article-author">By
+    
+      <a href="http://tutudev.com" title="Tu Fei">Tu Fei</a>
+    </p>
+  <p class="article-time">
+    <time datetime="2016-05-10T19:28:42.000Z" itemprop="datePublished">2016-05-11</time>
+    更新日期:<time datetime="2016-06-06T14:39:22.000Z" itemprop="dateModified">2016-06-06</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装react-native-code-push"><span class="toc-number">1.</span> <span class="toc-text">安装react-native-code-push</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装-amp-配置CodePush"><span class="toc-number">2.</span> <span class="toc-text">安装&配置CodePush</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CodePush更新过程"><span class="toc-number">3.</span> <span class="toc-text">CodePush更新过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+		</div>
+		
+		<h2 id="安装react-native-code-push"><a href="#安装react-native-code-push" class="headerlink" title="安装react-native-code-push"></a>安装react-native-code-push</h2><p>参考<a href="https://github.com/Microsoft/react-native-code-push#getting-started" target="_blank" rel="external">React-native-code-push README</a>  </p>
+<ol>
+<li><p>安装 <code>npm install react-native-code-push --save</code><br> 参数 –save 在安装的同时，把信息写入package.json 文件的项目路径<br> 检查:<br> ① package.json文件加入了</p>
+ <figure class="highlight json"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">   <span class="attr">"name"</span>: <span class="string">"APPReact"</span>,</span><br><span class="line">   <span class="attr">"version"</span>: <span class="string">"0.0.1"</span>,</span><br><span class="line">   <span class="attr">"private"</span>: <span class="literal">true</span>,</span><br><span class="line">   <span class="attr">"scripts"</span>: &#123;</span><br><span class="line">     <span class="attr">"start"</span>: <span class="string">"node node_modules/react-native/local-cli/cli.js start"</span></span><br><span class="line">   &#125;,</span><br><span class="line">   <span class="attr">"dependencies"</span>: &#123;</span><br><span class="line">     <span class="attr">"react"</span>: <span class="string">"^0.14.8"</span>,</span><br><span class="line">     <span class="attr">"react-native"</span>: <span class="string">"^0.25.1"</span>,</span><br><span class="line">     <span class="attr">"react-native-code-push"</span>: <span class="string">"^1.10.6-beta"</span></span><br><span class="line">   &#125;</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p> ② <code>node_modules</code>下有<code>react-native-code-push</code>文件夹</p>
+</li>
+<li><p>安装到本地工程<br>主要是将react-native-code-push工程加入到我们的本地工程里面去，<a href="https://github.com/Microsoft/react-native-code-push#getting-started" target="_blank" rel="external">参考官方文档。</a><br> <strong>iOS</strong>中修改加载js文件的路径代码，推荐写法：</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NSURL *jsCodeLocation;</span><br><span class="line"></span><br><span class="line">#ifdef DEBUG</span><br><span class="line">    jsCodeLocation = [NSURL URLWithString:@&quot;http://localhost:8081/index.ios.bundle?platform=ios&amp;dev=true&quot;];</span><br><span class="line">#else</span><br><span class="line">    jsCodeLocation = [CodePush bundleURL];  //这里默认是main.jsbundle的js文件名，如果是其他文件名，请使用其他接口来获取bundleURL</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="安装-amp-配置CodePush"><a href="#安装-amp-配置CodePush" class="headerlink" title="安装&amp;配置CodePush"></a>安装&amp;配置CodePush</h2><p>参考<a href="https://github.com/Microsoft/code-push/blob/master/cli/README.md" target="_blank" rel="external">CodePush Management</a></p>
+<ol>
+<li><p>安装<br><code>npm install -g code-push-cli</code>  </p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">//指令列表</span><br><span class="line">tufei$ code-push</span><br><span class="line">  _____        __    ___           __ </span><br><span class="line"> / ___/__  ___/ /__ / _ \__ _____ / / </span><br><span class="line">/ /__/ _ \/ _  / -_) ___/ // (_-&lt;/ _ \</span><br><span class="line">\___/\___/\_,_/\__/_/   \_,_/___/_//_/    CLI v1.10.0-beta</span><br><span class="line">======================================</span><br><span class="line">    </span><br><span class="line">CodePush is a service that enables you to deploy mobile app updates directly to your users&apos; devices.</span><br><span class="line">    </span><br><span class="line">Usage: code-push &lt;command&gt;</span><br><span class="line">    </span><br><span class="line">命令：</span><br><span class="line">  access-key       View and manage the access keys associated with your account</span><br><span class="line">  app              View and manage your CodePush apps</span><br><span class="line">  collaborator     View and manage app collaborators</span><br><span class="line">  deployment       View and manage your app deployments</span><br><span class="line">  link             Link an additional authentication provider (e.g. GitHub) to an existing CodePush account</span><br><span class="line">  login            Authenticate with the CodePush server in order to begin managing your apps</span><br><span class="line">  logout           Log out of the current session</span><br><span class="line">  patch            Update the metadata for an existing release</span><br><span class="line">  promote          Promote the latest release from one app deployment to another</span><br><span class="line">  register         Register a new CodePush account</span><br><span class="line">  release          Release an update to an app deployment</span><br><span class="line">  release-cordova  Release a Cordova update to an app deployment</span><br><span class="line">  release-react    Release a React Native update to an app deployment</span><br><span class="line">  rollback         Rollback the latest release for an app deployment</span><br><span class="line">  whoami           Display the account info for the current login session</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>配置<br> ① 注册code-push账号<br>   <code>code-push register</code>弹出窗口，使用Microsoft账号或者GitHub账号，会得到token然后拷贝到命令行提示你输入的地方，这时候默认你已经注册好Code-Push账号并且已经登陆了，可以使用<code>code-push login / code-push logout</code>登入，登出  </p>
+<pre><code>* 使用code-push 服务器  
+* 登陆 code-push login  
+* 注销 code-push logout  
+* 列出 登陆的token      
+* code-push access-key ls  
+* 删除某个access-key  
+* code-push access-key rm &lt;accessKey&gt;  
+</code></pre><p> ② 管理app</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">tutumagideMBP:APPReact tufei$ code-push app</span><br><span class="line">Usage: code-push app &lt;command&gt;</span><br><span class="line"></span><br><span class="line">命令：</span><br><span class="line">  add       Add a new app to your account</span><br><span class="line">  remove    Remove an app from your account</span><br><span class="line">  rm        Remove an app from your account</span><br><span class="line">  rename    Rename an existing app</span><br><span class="line">  list      Lists the apps associated with your account</span><br><span class="line">  ls        Lists the apps associated with your account</span><br><span class="line">  transfer  Transfer the ownership of an app to another account</span><br></pre></td></tr></table></figure>
+</code></pre><p> 先把我们的APP加入进去，<code>Deployment key</code>是我们在Native端需要配置的，也是我们热更新时将不同环境（开发环境，测试环境，生产环境）隔离开来的<strong><code>key</code></strong>，默认生成两个环境，我们可以使用<code>code-push deployment add APP_task test</code>添加一个环境</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">$code-push app add APP_task</span><br><span class="line">Successfully added the &quot;APP_task&quot; app, along with the following default deployments:</span><br><span class="line">┌────────────┬───────────────────────────────────────┐</span><br><span class="line">│ Name       │ Deployment Key                        │</span><br><span class="line">├────────────┼───────────────────────────────────────┤</span><br><span class="line">│ Production │ CKUhCYrVOt9puAYYOEyaBGyQ9gFHEk2EyF5-- │</span><br><span class="line">├────────────┼───────────────────────────────────────┤</span><br><span class="line">│ Staging    │ 2WuVTI0Ahb9mHoNkOufG9eBCGQxsEk2EyF5-- │</span><br><span class="line">└────────────┴───────────────────────────────────────┘</span><br></pre></td></tr></table></figure>
+</code></pre><p> 查看我们添加的APP</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">tutumagideMBP:APPReact tufei$ code-push app ls</span><br><span class="line">┌───────────┬─────────────────────┐</span><br><span class="line">│ Name      │ Deployments         │</span><br><span class="line">├───────────┼─────────────────────┤</span><br><span class="line">│ APP_task │ Production, Staging │</span><br><span class="line">└───────────┴─────────────────────┘</span><br></pre></td></tr></table></figure>
+</code></pre><p> 添加一个测试环境</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ code-push deployment add APP_task test</span><br><span class="line">Successfully added the &quot;test&quot; deployment with key &quot;2ZKF6OuLvf0BPhOKfs0b3IiSHjFJEk2EyF5--&quot; to the &quot;APP_task&quot; app.</span><br></pre></td></tr></table></figure>
+</code></pre><p> 查看APP的环境信息</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">tufei$ code-push deployment list APP_task --format json</span><br><span class="line">[</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;name&quot;: &quot;dev&quot;,</span><br><span class="line">    &quot;key&quot;: &quot;0MbMLGx_gPn7uO_HxWrW9YhFjFMBEk2EyF5--&quot;,</span><br><span class="line">    &quot;package&quot;: null</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;name&quot;: &quot;Production&quot;,</span><br><span class="line">    &quot;key&quot;: &quot;CKUhCYrVOt9puAYYOEyaBGyQ9gFHEk2EyF5--&quot;,</span><br><span class="line">    &quot;package&quot;: null</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;name&quot;: &quot;Staging&quot;,</span><br><span class="line">    &quot;key&quot;: &quot;2WuVTI0Ahb9mHoNkOufG9eBCGQxsEk2EyF5--&quot;,</span><br><span class="line">    &quot;package&quot;: null</span><br><span class="line">  &#125;,</span><br><span class="line">  &#123;</span><br><span class="line">    &quot;name&quot;: &quot;test&quot;,</span><br><span class="line">    &quot;key&quot;: &quot;2ZKF6OuLvf0BPhOKfs0b3IiSHjFJEk2EyF5--&quot;,</span><br><span class="line">    &quot;package&quot;: null</span><br><span class="line">  &#125;</span><br><span class="line">]</span><br></pre></td></tr></table></figure>
+</code></pre><p> 将我们需要运作的环境的key添加到XCode的Target Info.plist里面，添加<code>CodePushDeploymentKey</code> 的值，这里我们使用test环境，拷贝<code>test</code>的 key值  <code>2ZKF6OuLvf0BPhOKfs0b3IiSHjFJEk2EyF5--</code>到那里去，这里就要注意不同环境下的key值不一样，所以注意区分，最好写脚本去构建不同的包。<br> 再确保 <strong>Bundle Version String， short 这一行的值是 1.0.0  而不是 1.0</strong>，这个版本号也是我们后面更新时要用到（就是说：Code-Push支持针对不同的APP版本去做热更新）</p>
+<pre><code>到这一步需要考虑的问题：
+
+1. 何时检查更新（每次启动时？每次更新时？特定时候：比如按一个按钮？）
+2. 何时安装更新（每次启动时？每次更新下载后就安装？提示用户安装？）
+</code></pre><p> 这个是我们去考虑的问题</p>
+<p> 在JavaScript文件里加入</p>
+ <figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">var</span> CodePush = <span class="built_in">require</span>(“react-native-code-push”);</span><br><span class="line"><span class="comment">//componentDidMount函数里加入</span></span><br><span class="line">CodePush.sync();</span><br></pre></td></tr></table></figure>
+</li>
+</ol>
+<h2 id="CodePush更新过程"><a href="#CodePush更新过程" class="headerlink" title="CodePush更新过程"></a>CodePush更新过程</h2><ol>
+<li><p>打包更新文件<br> ① 仅更新js文件  </p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">tutumagideMBP:APPReact tufei$ react-native bundle --parameter ios --entry-file index.ios.js --bundle-output ./testCodePush/APP_task010001.js</span><br><span class="line">[16:09:02] &lt;START&gt; Building Dependency Graph</span><br><span class="line">[16:09:02] &lt;START&gt; Crawling File System</span><br><span class="line">[16:09:02] &lt;START&gt; find dependencies</span><br><span class="line">[16:09:05] &lt;END&gt;   Crawling File System (3349ms)</span><br><span class="line">[16:09:05] &lt;START&gt; Building in-memory fs for JavaScript</span><br><span class="line">[16:09:05] &lt;END&gt;   Building in-memory fs for JavaScript (166ms)</span><br><span class="line">[16:09:05] &lt;START&gt; Building in-memory fs for Assets</span><br><span class="line">[16:09:05] &lt;END&gt;   Building in-memory fs for Assets (118ms)</span><br><span class="line">[16:09:05] &lt;START&gt; Building Haste Map</span><br><span class="line">[16:09:05] &lt;START&gt; Building (deprecated) Asset Map</span><br><span class="line">[16:09:05] &lt;END&gt;   Building (deprecated) Asset Map (40ms)</span><br><span class="line">[16:09:05] &lt;END&gt;   Building Haste Map (105ms)</span><br><span class="line">[16:09:05] &lt;END&gt;   Building Dependency Graph (3776ms)</span><br><span class="line">transformed 552/552 (100%)</span><br><span class="line">[16:09:06] &lt;END&gt;   find dependencies (3898ms)</span><br><span class="line">bundle: start</span><br><span class="line">bundle: finish</span><br><span class="line">bundle: Writing bundle output to: ./testCodePush/APP_task010001.js</span><br><span class="line">bundle: Done writing bundle output</span><br><span class="line">Assets destination folder is not set, skipping...</span><br></pre></td></tr></table></figure>
+</code></pre><p> ② 更新js和图片</p>
+<pre><code><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">tutumagideMBP:APPReact tufei$ react-native bundle --parameter ios --entry-file index</span><br><span class="line">.ios.js --bundle-output ./bundles/SwitchCheck010004.js --assets-dest ./bundles</span><br><span class="line">[20:21:50] &lt;START&gt; Building Dependency Graph</span><br><span class="line">[20:21:50] &lt;START&gt; Crawling File System</span><br><span class="line">[20:21:51] &lt;START&gt; find dependencies</span><br><span class="line">[20:21:55] &lt;END&gt;   Crawling File System (4440ms)</span><br><span class="line">[20:21:55] &lt;START&gt; Building in-memory fs for JavaScript</span><br><span class="line">[20:21:55] &lt;END&gt;   Building in-memory fs for JavaScript (199ms)</span><br><span class="line">[20:21:55] &lt;START&gt; Building in-memory fs for Assets</span><br><span class="line">[20:21:55] &lt;END&gt;   Building in-memory fs for Assets (128ms)</span><br><span class="line">[20:21:55] &lt;START&gt; Building Haste Map</span><br><span class="line">[20:21:55] &lt;START&gt; Building (deprecated) Asset Map</span><br><span class="line">[20:21:55] &lt;END&gt;   Building (deprecated) Asset Map (47ms)</span><br><span class="line">[20:21:55] &lt;END&gt;   Building Haste Map (115ms)</span><br><span class="line">[20:21:55] &lt;END&gt;   Building Dependency Graph (4907ms)</span><br><span class="line">transformed 552/552 (100%)</span><br><span class="line">[20:21:56] &lt;END&gt;   find dependencies (4677ms)</span><br><span class="line">bundle: start</span><br><span class="line">bundle: finish</span><br><span class="line">bundle: Writing bundle output to: ./bundles/SwitchCheck010004.js</span><br><span class="line">bundle: Done writing bundle output</span><br><span class="line">bundle: Copying 5 asset files</span><br><span class="line">bundle: Done copying assets</span><br></pre></td></tr></table></figure>
+</code></pre><p> <strong>注意</strong></p>
+<blockquote>
+<p>这里打包更新的文件时，并不是Code-push给我们做的，是React-native框架给我们完成的，当我们执行上面指令时，其实是执行了<code>node node_modules/react-native/local-cli/cli.js bundle --assets-dest ./bundles/ --bundle-output ./bundles//main.jsbundle --dev true --entry-file index.ios.js --platform ios</code>类似的指令，可以自己在本地执行一下，打包的资源在 –assets-dest 指定的目录以及打包的js文件在 –bundle-output 指定的文件，Code-Push只是默默帮我们封装了一层并且压缩上传。可以输入–dev true 参数，观察目录变化，当出现.zip文件时，立刻解压（因为Code-push在上传成功后会删掉此文件），解压出来的就是我们上面执行指令的生成文件。</p>
+</blockquote>
+</li>
+<li><p>发布更新文件</p>
+<p> <code>code-push relase [AppName] -d [Deployment参数] [更新文件目录] [需要更新到App的版本号]</code></p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">tutumagideMBP:APPReact tufei$ code-push release APP_task -d test ./testCodePush/APP_task010001.js 1.0.0</span><br><span class="line">Upload progress:[==================================================] 100% 0.0s</span><br><span class="line">Successfully released an update containing the &quot;./testCodePush/APP_task010001.js&quot; file to the &quot;test&quot; deployment of the &quot;APP_task&quot; app.</span><br></pre></td></tr></table></figure>
+</li>
+<li><p>更好用的命令</p>
+ <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">//综合的上面说的1，2步的操作：1，新建存放打包后的目录，打包js和资源文件到此目录；2，根据命令行配置参数更新此目录的内容</span><br><span class="line">code-push release-react &lt;appName&gt; &lt;platform&gt;</span><br><span class="line">[--bundleName &lt;bundleName&gt;]</span><br><span class="line">[--deploymentName &lt;deploymentName&gt;]</span><br><span class="line">[--description &lt;description&gt;]</span><br><span class="line">[--development &lt;development&gt;]</span><br><span class="line">[--disabled &lt;disabled&gt;]</span><br><span class="line">[--entryFile &lt;entryFile&gt;]</span><br><span class="line">[--mandatory]</span><br><span class="line">[--sourcemapOutput &lt;sourcemapOutput&gt;]</span><br><span class="line">[--targetBinaryVersion &lt;targetBinaryVersion&gt;]</span><br><span class="line">[--rollout &lt;rolloutPercentage&gt;]</span><br><span class="line">//官方文档对参数都有说明</span><br></pre></td></tr></table></figure>
+<p> 发布后我们的App就可以根据自己的改动以及更新机制去更新了。</p>
+</li>
+</ol>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>根据参数说明可以知道Code-Push支持的配置以及功能有  </p>
+<ol>
+<li>deploymentName：根据环境配置（test，dev，product）</li>
+<li>mandatory：是否强制更新（检测到更新，下载后立即运行）</li>
+<li>rollout：灰度更新</li>
+<li>code-push rollback <appname> <deploymentname> 回滚</deploymentname></appname></li>
+<li><p>code-push promote <appname> <sourcedeploymentname> <destdeploymentname><br>[–description <description>]<br>[–disabled <disabled>]<br>[–mandatory]<br>[–rollout <rolloutpercentage>]<br>[–targetBinaryVersion &lt;targetBinaryVersion]<br>测试的更新可以直接提升为生成环境的更新，不用再次打包更新（避免测试与发布不一致的问题）</rolloutpercentage></disabled></description></destdeploymentname></sourcedeploymentname></appname></p>
+</li>
+<li><p>版本可追踪<br>code-push deployment history <appname> <deploymentname></deploymentname></appname></p>
+</li>
+<li><p>更新的安装情况可知</p>
+</li>
+</ol>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">tufei$ code-push deployment list  APP_task</span><br><span class="line">┌────────────┬──────────────────────────────────┬───────────────────────┐</span><br><span class="line">│ Name       │ Update Metadata                  │ Install Metrics       │</span><br><span class="line">├────────────┼──────────────────────────────────┼───────────────────────┤</span><br><span class="line">│ dev        │ No updates released              │ No installs recorded  │</span><br><span class="line">├────────────┼──────────────────────────────────┼───────────────────────┤</span><br><span class="line">│ Production │ No updates released              │ No installs recorded  │</span><br><span class="line">├────────────┼──────────────────────────────────┼───────────────────────┤</span><br><span class="line">│ Staging    │ No updates released              │ No installs recorded  │</span><br><span class="line">├────────────┼──────────────────────────────────┼───────────────────────┤</span><br><span class="line">│ test       │ Label: v3                        │ Active: 100% (1 of 1) │</span><br><span class="line">│            │ App Version: 1.0.0               │ Total: 1              │</span><br><span class="line">│            │ Mandatory: No                    │                       │</span><br><span class="line">│            │ Release Time: 9 hours ago        │                       │</span><br><span class="line">│            │ Released By: tufei.fly@gmail.com │                       │</span><br><span class="line">└────────────┴──────────────────────────────────┴───────────────────────┘</span><br></pre></td></tr></table></figure>
+<p><strong>更多的功能大家自行安装体验便知。</strong></p>
+<h2 id="参考"><a href="#参考" class="headerlink" title="参考"></a>参考</h2><ol>
+<li><a href="https://github.com/Microsoft/react-native-code-push#getting-started" target="_blank" rel="external">React-native-code-push README</a>  </li>
+<li><a href="https://github.com/Microsoft/code-push/blob/master/cli/README.md" target="_blank" rel="external">CodePush Management</a>  </li>
+<li>部分摘自<a href="http://blog.csdn.net/oiken/article/details/50279871" target="_blank" rel="external">使用者的经验</a>，如有侵权，请于<a href="tufei.fly@gmail.com">联系</a>  </li>
+</ol>
+<p>注：Code-Push体验版本: <strong>1.10.0-beta</strong>，仅在iOS上测试通过</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Code-Push/">Code-Push</a>
+  </div>
+
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Coding/">Coding</a>
+</div>
+
+
+
+<div class="article-share" id="share">
+
+  
+<div class="jiathis_style">
+    <span class="jiathis_txt">分享到：</span>
+    <a class="jiathis_button_tsina">新浪微博</a>
+    <a class="jiathis_button_weixin">微信</a>
+    <a class="jiathis_button_evernote">EverNote</a>
+    <a href="http://www.jiathis.com/share?uid=1501277" class="jiathis jiathis_txt jiathis_separator jtico jtico_jiathis" target="_blank">更多</a>
+</div>
+<script type="text/javascript" >
+    var jiathis_config={
+    data_track_clickback:true,
+    sm:"copy,renren,cqq",
+    pic:"",
+    summary:"",
+     ralateuid:{"tsina":"3029205243"},hideMore:false}
+    
+  </script>
+<script type="text/javascript" src="//v3.jiathis.com/code/jia.js?uid=
+2097266" charset="utf-8"></script>
+
+
+
+</div>
+</footer>   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2016/06/28/runloop/" title="RunLoop源码观察">
+  <strong>PREVIOUS:</strong><br/>
+  <span>
+  RunLoop源码观察</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2016/04/26/React-Native-Study/"  title="React Native 学习记录 － JS和OC通信流程">
+ <strong>NEXT:</strong><br/> 
+ <span>React Native 学习记录 － JS和OC通信流程
+</span>
+</a>
+</div>
+
+</nav>
+
+	<!--  -->
+
+
+<section id="comment">
+  <h1 class="title">文章评论</h1>
+
+  
+  <div id="disqus_thread"></div>
+<script>
+(function() { // DON'T EDIT BELOW THIS LINE
+var d = document, s = d.createElement('script');
+
+s.src = '//tutusblog.disqus.com/embed.js';
+
+s.setAttribute('data-timestamp', +new Date());
+(d.head || d.body).appendChild(s);
+})();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+  
+</section>
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+  <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#安装react-native-code-push"><span class="toc-number">1.</span> <span class="toc-text">安装react-native-code-push</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#安装-amp-配置CodePush"><span class="toc-number">2.</span> <span class="toc-text">安装&配置CodePush</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CodePush更新过程"><span class="toc-number">3.</span> <span class="toc-text">CodePush更新过程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考"><span class="toc-number">5.</span> <span class="toc-text">参考</span></a></li></ol>
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+			<li><a href="/categories/Coding/" title="Coding">Coding<sup>2</sup></a></li>
+		
+			<li><a href="/categories/iOS/" title="iOS">iOS<sup>1</sup></a></li>
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			<li><a href="/tags/Code-Push/" title="Code-Push">Code-Push<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Hexo/" title="Hexo">Hexo<sup>1</sup></a></li>
+		
+			<li><a href="/tags/Pacman/" title="Pacman">Pacman<sup>1</sup></a></li>
+		
+			<li><a href="/tags/React-Native/" title="React Native">React Native<sup>1</sup></a></li>
+		
+			<li><a href="/tags/RunLoop/" title="RunLoop">RunLoop<sup>1</sup></a></li>
+		
+			<li><a href="/tags/iOS/" title="iOS">iOS<sup>2</sup></a></li>
+		
+		</ul>
+</div>
+
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	<div class="line">
+		<span></span>
+		<div class="author"></div>
+	</div>
+	
+	
+	<div class="social-font clearfix">
+		
+		<a href="http://weibo.com/tutumagi" target="_blank" title="weibo"></a>
+		
+		
+		
+		<a href="https://github.com/tutumagi" target="_blank" title="github"></a>
+		
+		
+		
+	</div>
+		<p class="copyright">Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/A-limon/pacman" target="_blank" title="Pacman">Pacman</a> © 2016 
+		
+		<a href="http://tutudev.com" target="_blank" title="Tu Fei">Tu Fei</a>
+		
+		</p>
+		
+<script type="text/javascript">
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+ga('create', 'UA-76952316-1', 'auto');  
+ga('send', 'pageview');
+</script>
+
+</div>
+</footer>
+    <script src="/js/jquery-2.1.0.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  $(window).resize(function(){
+    getSize();
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else
+    {
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+      
+    }
+  });
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      h  = $('article h2')
+      ah = $('article h2'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  if(ah.length==0){
+    t.css('display','none');
+  }else{
+    c.click(function(){
+      ta.css('display', 'block').addClass('fadeIn');
+    });
+    o.click(function(){
+      ta.css('display', 'none');
+    });
+    $(window).scroll(function(){
+      ta.css("top",Math.max(140,320-$(this).scrollTop()));
+    });
+  };
+});
+</script>
+
+
+
+
+
+
+  </body>
+</html>
