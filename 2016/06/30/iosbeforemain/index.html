@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>App进入Main之前做的事情 | Tutu&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="App进入Main之前做的事情  我们知道，程序的”启动入口”在main函数，但这是从我们的程序逻辑来看的。实际上操作系统在加载我们的二进制可执行文件时，执行到main之前做了不少事情。比如oc的runtime运行库环境就是在main之前建立好的。我们来一起看看在main之前到底做了什么。先从OC的runtime的入口函数着手，_objc_init，我们符号断点一下，可以看到 可以看到入口在_dy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="App进入Main之前做的事情">
+<meta property="og:url" content="http://tutudev.com/2016/06/30/iosbeforemain/index.html">
+<meta property="og:site_name" content="Tutu&#39;s Blog">
+<meta property="og:description" content="App进入Main之前做的事情  我们知道，程序的”启动入口”在main函数，但这是从我们的程序逻辑来看的。实际上操作系统在加载我们的二进制可执行文件时，执行到main之前做了不少事情。比如oc的runtime运行库环境就是在main之前建立好的。我们来一起看看在main之前到底做了什么。先从OC的runtime的入口函数着手，_objc_init，我们符号断点一下，可以看到 可以看到入口在_dy">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://7xsw3s.com1.z0.glb.clouddn.com/1467193628830">
+<meta property="og:image" content="http://7xsw3s.com1.z0.glb.clouddn.com/1467193940225">
+<meta property="article:published_time" content="2016-06-29T16:15:09.000Z">
+<meta property="article:modified_time" content="2021-04-28T04:22:06.027Z">
+<meta property="article:author" content="Tu Fei">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Runtime">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://7xsw3s.com1.z0.glb.clouddn.com/1467193628830">
+  
+    <link rel="alternate" href="/atom.xml" title="Tutu&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Tutu&#39;s Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://tutudev.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-iosbeforemain" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/30/iosbeforemain/" class="article-date">
+  <time datetime="2016-06-29T16:15:09.000Z" itemprop="datePublished">2016-06-30</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      App进入Main之前做的事情
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <h1 id="App进入Main之前做的事情"><a href="#App进入Main之前做的事情" class="headerlink" title="App进入Main之前做的事情"></a>App进入Main之前做的事情</h1><!--
+create time: 2016-06-29 15:21:30
+Author: tufei
+
+This file is created by Marboo<http://marboo.io> template file $MARBOO_HOME/.media/starts/default.md
+本文件由 Marboo<http://marboo.io> 模板文件 $MARBOO_HOME/.media/starts/default.md 创建
+-->
+
+<p>我们知道，程序的”启动入口”在<code>main</code>函数，但这是从我们的程序逻辑来看的。实际上操作系统在加载我们的二进制可执行文件时，执行到<code>main</code>之前做了不少事情。比如oc的runtime运行库环境就是在main之前建立好的。<br>我们来一起看看在<code>main</code>之前到底做了什么。<br>先从OC的runtime的入口函数着手，<code>_objc_init</code>，我们符号断点一下，可以看到<br><img src="http://7xsw3s.com1.z0.glb.clouddn.com/1467193628830"><br><img src="http://7xsw3s.com1.z0.glb.clouddn.com/1467193940225"></p>
+<p>可以看到入口在<code>_dyld_start</code>，dyld是开源的，<a target="_blank" rel="noopener" href="http://opensource.apple.com/tarballs/dyld/">代码在这</a></p>
+<h2 id="dyld"><a href="#dyld" class="headerlink" title="dyld"></a>dyld</h2><p><a target="_blank" rel="noopener" href="https://developer.apple.com/legacy/library/documentation/Darwin/Reference/ManPages/man1/dyld.1.html">dyld</a>在苹果里有介绍，在<a target="_blank" rel="noopener" href="https://www.mikeash.com/pyblog/friday-qa-2012-11-09-dyld-dynamic-linking-on-os-x.html">这里</a>也有介绍，wiki在<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dynamic_linker">这里</a><br>简单来说<code>dyld</code>是来负责iOS/MacOSX应用程序动态链接库的运作的，类似windows上的<a target="_blank" rel="noopener" href="https://en.wikipedia.org/wiki/Dynamic_linker#OS_X_and_iOS">dll</a>技术。</p>
+<h2 id="ImageLoader"><a href="#ImageLoader" class="headerlink" title="ImageLoader"></a>ImageLoader</h2><p>这里的<code>ImageLoader</code>指的是镜像加载，负责从镜像文件中取出各种我们需要的信息，主要是决议了一些需要在动态链接时的符号。<br>我们的程序在运行的时候除了自己的可执行镜像，还会依赖许多其他的库，有些在我们编译链接时给link进去了，这是静态链接，比如Podfile里面配置的第三方库（framework,.a文件,.so文件），有些是我们的程序启动时链接的库，比如最常见的libobjc.A.dylib，里面包含了objc的runtime。</p>
+<p><strong>那么我们的iOS/MacOSX应用程序是如何动态加载的呢？</strong>还是从刚才的堆栈和对照<a target="_blank" rel="noopener" href="http://opensource.apple.com/tarballs/dyld/">dyld源码</a>，<a target="_blank" rel="noopener" href="http://opensource.apple.com/tarballs/objc4/">runtime源码</a>探索</p>
+<p>搜索<code>_dyld_start</code>发现启动的部分在文件<code>dyldStartup.s</code>，里面是一坨汇编，就不细看了。<br>循着堆栈的踪迹，看到在函数<code>dyld::_main</code>这里，根据源码中的注释可以看到，dyld::_main是dyld的入口，内核在加载dyld时，从 <code>dyld_start -&gt; dyld::main ``dyld:main</code>做一些注册操作并返回真正的应用程序的main函数地址</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Entry point for dyld.  The kernel loads dyld and jumps to __dyld_start which</span></span><br><span class="line"><span class="comment">// sets up some registers and call this function.</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="comment">// Returns address of main() in target program which __dyld_start jumps to</span></span><br><span class="line"><span class="comment">//</span></span><br><span class="line"><span class="keyword">uintptr_t</span></span><br><span class="line">_main(<span class="keyword">const</span> macho_header* mainExecutableMH, <span class="keyword">uintptr_t</span> mainExecutableSlide, </span><br><span class="line">		<span class="keyword">int</span> argc, <span class="keyword">const</span> <span class="keyword">char</span>* argv[], <span class="keyword">const</span> <span class="keyword">char</span>* envp[], <span class="keyword">const</span> <span class="keyword">char</span>* apple[], </span><br><span class="line">		<span class="keyword">uintptr_t</span>* startGlue)</span><br><span class="line">&#123;</span><br><span class="line">    ....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>dyld</code>在加载到<code>libdispatch.dylib</code>时，会调用到<code>_objc_init</code>，看下这个函数的代码</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//objc-os.mm</span></span><br><span class="line"><span class="keyword">void</span> _objc_init(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">bool</span> initialized = <span class="literal">false</span>;</span><br><span class="line">    <span class="keyword">if</span> (initialized) <span class="keyword">return</span>;</span><br><span class="line">    initialized = <span class="literal">true</span>;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// fixme defer initialization until an objc-using image is found?</span></span><br><span class="line">    <span class="built_in">environ_init</span>();</span><br><span class="line">    <span class="built_in">tls_init</span>();</span><br><span class="line">    <span class="built_in">static_init</span>();</span><br><span class="line">    <span class="built_in">lock_init</span>();</span><br><span class="line">    <span class="built_in">exception_init</span>();</span><br><span class="line">        </span><br><span class="line">    <span class="comment">// Register for unmap first, in case some +load unmaps something</span></span><br><span class="line">    _dyld_register_func_for_remove_image(&amp;unmap_image);</span><br><span class="line">    <span class="built_in">dyld_register_image_state_change_handler</span>(dyld_image_state_bound,</span><br><span class="line">                                             <span class="number">1</span><span class="comment">/*batch*/</span>, &amp;map_2_images);</span><br><span class="line">    <span class="built_in">dyld_register_image_state_change_handler</span>(dyld_image_state_dependents_initialized, </span><br><span class="line">    <span class="number">0</span><span class="comment">/*not batch*/</span>, &amp;load_images);</span><br><span class="line">&#125;</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>前面是一些环境的初始化，重点看后面的<code>dyld_xxx</code>方法，这几个方法向<code>dyld</code>注册了回调  </p>
+<ol>
+<li><code>_dyld_register_func_for_remove_image(&amp;unmap_image);</code>就如注释所说，先注册一个remove_image的方法，为了避免用户在<code>+(void)load</code>里面去unmap一些东西。</li>
+<li><code>dyld_register_image_state_change_handler</code>这里注册了一个回调，当dyld_image状态为<code>dyld_image_state_bound</code>时，触发回调。</li>
+<li><code>dyld_register_image_state_change_handler </code>这里注册了一个回调，当dyld_image状态为<code>dyld_image_state_dependents_initialized</code>时，触发回调。<br>当我们在category或者类中添加<code>+(void) load</code>方法时，会在这个时机调用。<br>具体我们在<code>load_images</code>中可以看到有如下代码片段</li>
+</ol>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">const</span> <span class="keyword">char</span> *</span><br><span class="line">load_images(<span class="keyword">enum</span> dyld_image_states state, <span class="keyword">uint32_t</span> infoCount,</span><br><span class="line">            <span class="keyword">const</span> struct dyld_image_info infoList[])</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">bool</span> found;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Return without taking locks if there are no +load methods here.</span></span><br><span class="line">        found = <span class="literal">false</span>;</span><br><span class="line">        <span class="comment">//这里会找所有的class以及category的列表里面是否有+load方法</span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">uint32_t</span> i = <span class="number">0</span>; i &lt; infoCount; i++) &#123;</span><br><span class="line">            <span class="keyword">if</span> (hasLoadMethods((<span class="keyword">const</span> headerType *)infoList[i].imageLoadAddress)) &#123;</span><br><span class="line">                found = <span class="literal">true</span>;</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (!found) <span class="keyword">return</span> nil;</span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        <span class="function"><span class="keyword">recursive_mutex_locker_t</span> <span class="title">lock</span><span class="params">(loadMethodLock)</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// Discover load methods</span></span><br><span class="line">        <span class="comment">// 搜集所有的+load方法</span></span><br><span class="line">        &#123;</span><br><span class="line">            <span class="function"><span class="keyword">rwlock_writer_t</span> <span class="title">lock2</span><span class="params">(runtimeLock)</span></span>;</span><br><span class="line">            found = load_images_nolock(state, infoCount, infoList);</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//调用+load方法</span></span><br><span class="line">        <span class="keyword">if</span> (found) &#123;</span><br><span class="line">            call_load_methods();</span><br><span class="line">        &#125;</span><br><span class="line">        ...</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">bool</span> </span><br><span class="line">load_images_nolock(<span class="keyword">enum</span> dyld_image_states state,<span class="keyword">uint32_t</span> infoCount,</span><br><span class="line">                   <span class="keyword">const</span> struct dyld_image_info infoList[])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">bool</span> found = NO;</span><br><span class="line">        <span class="keyword">uint32_t</span> i;</span><br><span class="line">    </span><br><span class="line">        i = infoCount;</span><br><span class="line">        <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">            <span class="keyword">const</span> headerType *mhdr = (headerType*)infoList[i].imageLoadAddress;</span><br><span class="line">            <span class="keyword">if</span> (!hasLoadMethods(mhdr)) <span class="keyword">continue</span>;</span><br><span class="line">            <span class="comment">// 搜集镜像中的load方法</span></span><br><span class="line">            prepare_load_methods(mhdr);</span><br><span class="line">            found = YES;</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">return</span> found;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">  </span><br><span class="line">  </span><br><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">prepare_load_methods</span><span class="params">(<span class="keyword">const</span> headerType *mhdr)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">size_t</span> count, i;</span><br><span class="line">    </span><br><span class="line">        runtimeLock.assertWriting();</span><br><span class="line">    </span><br><span class="line">        <span class="comment">//1. 先搜集class中的+load方法</span></span><br><span class="line">        <span class="keyword">classref_t</span> *classlist = </span><br><span class="line">            _getObjc2NonlazyClassList(mhdr, &amp;count);</span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            schedule_class_load(remapClass(classlist[i]));</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">category_t</span> **categorylist = _getObjc2NonlazyCategoryList(mhdr, &amp;count);</span><br><span class="line">        <span class="comment">//2. 再搜集category中的+load方法</span></span><br><span class="line">        <span class="keyword">for</span> (i = <span class="number">0</span>; i &lt; count; i++) &#123;</span><br><span class="line">            <span class="keyword">category_t</span> *cat = categorylist[i];</span><br><span class="line">            Class cls = remapClass(cat-&gt;cls);</span><br><span class="line">            <span class="keyword">if</span> (!cls) <span class="keyword">continue</span>;  <span class="comment">// category for ignored weak-linked class</span></span><br><span class="line">            realizeClass(cls);</span><br><span class="line">            assert(cls-&gt;ISA()-&gt;isRealized());</span><br><span class="line">            add_category_to_loadable_list(cat);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//递归实现，可以看到这里是先找父类中的+load方法，并放入到一个列表里面，所以在最终的class的load方法列表里面，父类的+load方法是先于子类的+load方法的</span></span><br><span class="line">    <span class="comment">//大家可以看下add_class_to_loadable_list的实现，里面的分配内存策略使用了指数增长策略</span></span><br><span class="line">    <span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">schedule_class_load</span><span class="params">(Class cls)</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (!cls) <span class="keyword">return</span>;</span><br><span class="line">        assert(cls-&gt;isRealized());  <span class="comment">// _read_images should realize</span></span><br><span class="line">    </span><br><span class="line">        <span class="keyword">if</span> (cls-&gt;data()-&gt;flags &amp; RW_LOADED) <span class="keyword">return</span>;</span><br><span class="line">    </span><br><span class="line">        <span class="comment">// Ensure superclass-first ordering</span></span><br><span class="line">        schedule_class_load(cls-&gt;superclass);</span><br><span class="line">    </span><br><span class="line">        add_class_to_loadable_list(cls);</span><br><span class="line">        cls-&gt;setInfo(RW_LOADED); </span><br><span class="line">    &#125;</span><br><span class="line">    </span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+  <figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line">  <span class="function"><span class="keyword">void</span> <span class="title">call_load_methods</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">bool</span> loading = NO;</span><br><span class="line">    <span class="keyword">bool</span> more_categories;</span><br><span class="line"></span><br><span class="line">    loadMethodLock.assertLocked();</span><br><span class="line"></span><br><span class="line">    <span class="comment">// Re-entrant calls do nothing; the outermost call will finish the job.</span></span><br><span class="line">    <span class="keyword">if</span> (loading) <span class="keyword">return</span>;</span><br><span class="line">    loading = YES;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">void</span> *pool = objc_autoreleasePoolPush();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">do</span> &#123;</span><br><span class="line">        <span class="comment">// 1. Repeatedly call class +loads until there aren&#x27;t any more</span></span><br><span class="line">        <span class="keyword">while</span> (loadable_classes_used &gt; <span class="number">0</span>) &#123;</span><br><span class="line">            call_class_loads();</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 2. Call category +loads ONCE</span></span><br><span class="line">        more_categories = call_category_loads();</span><br><span class="line"></span><br><span class="line">        <span class="comment">// 3. Run more +loads if there are classes OR more untried categories</span></span><br><span class="line">    &#125; <span class="keyword">while</span> (loadable_classes_used &gt; <span class="number">0</span>  ||  more_categories);</span><br><span class="line"></span><br><span class="line">    objc_autoreleasePoolPop(pool);</span><br><span class="line"></span><br><span class="line">    loading = NO;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>  为什么要重复调用<code>call_class_loads</code>和<code>call_category_loads</code>呢，答案是由于这个函数被设计为可重入的，重入时这个函数直接return。这样当我们在<code>+load</code>函数中又去<code>map</code>了其他的镜像，这个镜像又有许多其他新的包含<code>+load</code>的类和分类，这里就是为了保证新添加的<code>+load</code>可以调用到。<br>  在<code>call_class_loads</code>中也可以看到，是从之前保存类的<code>+load</code>方法的列表头部开始一个一个取出来并执行的，所有我们的父类的<code>+load</code>要先于子类的<code>+load</code>执行。<br>  <code>call_load_methods</code>执行完毕后，所有<code>+load</code>方法就执行完毕了。</p>
+<p>  在上面第二步有一个回调<code>map_2_images</code>，我们来看看这个做了什么。</p>
+  <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">const</span> <span class="keyword">char</span> *</span><br><span class="line"><span class="built_in">map_images_nolock</span>(<span class="keyword">enum</span> dyld_image_states state, <span class="keyword">uint32_t</span> infoCount,</span><br><span class="line">                  <span class="keyword">const</span> struct dyld_image_info infoList[])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">bool</span> firstTime = YES;</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">bool</span> wantsGC = NO;</span><br><span class="line">        <span class="keyword">uint32_t</span> i;</span><br><span class="line">        header_info *hi;</span><br><span class="line">        header_info *hList[infoCount];</span><br><span class="line">        <span class="keyword">uint32_t</span> hCount;</span><br><span class="line">        <span class="keyword">size_t</span> selrefCount = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">        <span class="comment">// Perform first-time initialization if necessary.</span></span><br><span class="line">        <span class="comment">// This function is called before ordinary library initializers. </span></span><br><span class="line">        <span class="comment">// fixme defer initialization until an objc-using image is found?</span></span><br><span class="line">        <span class="keyword">if</span> (firstTime) &#123;</span><br><span class="line">            <span class="built_in">preopt_init</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">        <span class="comment">// Find all images with Objective-C metadata.</span></span><br><span class="line">        hCount = <span class="number">0</span>;</span><br><span class="line">        i = infoCount;</span><br><span class="line">        <span class="comment">//收集infoList中的所有header信息并存储在一个单链表</span></span><br><span class="line">        <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">            <span class="keyword">const</span> headerType *mhdr = (headerType *)infoList[i].imageLoadAddress;</span><br><span class="line">    </span><br><span class="line">            hi = <span class="built_in">addHeader</span>(mhdr);</span><br><span class="line">            <span class="keyword">if</span> (!hi) &#123;</span><br><span class="line">                <span class="comment">// no objc data in this entry</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">    </span><br><span class="line">            <span class="keyword">if</span> (mhdr-&gt;filetype == MH_EXECUTE) &#123;</span><br><span class="line">                <span class="comment">// Size some data structures based on main executable&#x27;s size</span></span><br><span class="line">                <span class="keyword">size_t</span> count;</span><br><span class="line">                _getObjc2SelectorRefs(hi, &amp;count);</span><br><span class="line">                selrefCount += count;</span><br><span class="line">                _getObjc2MessageRefs(hi, &amp;count);</span><br><span class="line">                selrefCount += count;</span><br><span class="line">            &#125;</span><br><span class="line">    </span><br><span class="line">            hList[hCount++] = hi;</span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">if</span> (firstTime) &#123;</span><br><span class="line">            <span class="comment">//注册一些我们常用的函数，比如load,alloc,dealloc等等</span></span><br><span class="line">            <span class="comment">//并使用selrefCount的值 去创建一个capacity为这个值的全局Map</span></span><br><span class="line">            <span class="built_in">sel_init</span>(wantsGC, selrefCount);</span><br><span class="line">            <span class="comment">//初始化AutoreleasePool，和一个SideTable，SideTable是干啥的也没弄清楚，暂时不管，这里不重要</span></span><br><span class="line">            <span class="built_in">arr_init</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//重点是这个，这个会去读取hList里面的所有的image</span></span><br><span class="line">        <span class="comment">//中的classes，categories，protocols并存储在内存中</span></span><br><span class="line">        <span class="comment">//使我们之后使用runtime方法提供了前提，比如方法替换，消息转发等等</span></span><br><span class="line">        _read_images(hList, hCount);</span><br><span class="line">    </span><br><span class="line">        firstTime = NO;</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>  看完回调的实现后，回到<code>dyld</code>在加载<code>libdipsatch.dylib</code>后，再加载其他镜像时，就会跑到这些回调，所有这些镜像内部的OC对象，方法，分类，协议等信息都会在runtime中存储好。一切就绪后，就开始跑到我们<code>main</code>函数了。</p>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tutudev.com/2016/06/30/iosbeforemain/" data-id="cko14ljgn0006679y6mhke7u1" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Runtime/" rel="tag">Runtime</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+  
+    <a href="/2016/06/28/objcAssociatedObject/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">Runtime之Associative References</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Coding/">Coding</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Code-Push/" rel="tag">Code-Push</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pacman/" rel="tag">Pacman</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React-Native/" rel="tag">React Native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RunLoop/" rel="tag">RunLoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Runtime/" rel="tag">Runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Code-Push/" style="font-size: 10px;">Code-Push</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Pacman/" style="font-size: 10px;">Pacman</a> <a href="/tags/React-Native/" style="font-size: 10px;">React Native</a> <a href="/tags/RunLoop/" style="font-size: 10px;">RunLoop</a> <a href="/tags/Runtime/" style="font-size: 15px;">Runtime</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/06/30/iosbeforemain/">App进入Main之前做的事情</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/28/objcAssociatedObject/">Runtime之Associative References</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/28/runloop/">RunLoop源码观察</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/code-push-tutorial/">Code-Push使用经验(仅iOS)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/26/React-Native-Study/">React Native 学习记录 － JS和OC通信流程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 Tu Fei<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  </div>
+</body>
+</html>

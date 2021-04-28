@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  
+  <title>Runtime之Associative References | Tutu&#39;s Blog</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <meta name="description" content="Runtime中跟AssociateObject相关的接口如下 12345void objc_setAssociatedObject(id object, void *key, id value, objc_AssociationPolicy policy)id objc_getAssociatedObject(id object, void *key)void objc_removeAssoci">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Runtime之Associative References">
+<meta property="og:url" content="http://tutudev.com/2016/06/28/objcAssociatedObject/index.html">
+<meta property="og:site_name" content="Tutu&#39;s Blog">
+<meta property="og:description" content="Runtime中跟AssociateObject相关的接口如下 12345void objc_setAssociatedObject(id object, void *key, id value, objc_AssociationPolicy policy)id objc_getAssociatedObject(id object, void *key)void objc_removeAssoci">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2016-06-28T07:11:45.000Z">
+<meta property="article:modified_time" content="2021-04-28T04:22:06.027Z">
+<meta property="article:author" content="Tu Fei">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Runtime">
+<meta name="twitter:card" content="summary">
+  
+    <link rel="alternate" href="/atom.xml" title="Tutu&#39;s Blog" type="application/atom+xml">
+  
+  
+    <link rel="icon" href="/favicon.png">
+  
+  
+    <link href="//fonts.googleapis.com/css?family=Source+Code+Pro" rel="stylesheet" type="text/css">
+  
+  
+<link rel="stylesheet" href="/css/style.css">
+
+  
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+<body>
+  <div id="container">
+    <div id="wrap">
+      <header id="header">
+  <div id="banner"></div>
+  <div id="header-outer" class="outer">
+    <div id="header-title" class="inner">
+      <h1 id="logo-wrap">
+        <a href="/" id="logo">Tutu&#39;s Blog</a>
+      </h1>
+      
+    </div>
+    <div id="header-inner" class="inner">
+      <nav id="main-nav">
+        <a id="main-nav-toggle" class="nav-icon"></a>
+        
+          <a class="main-nav-link" href="/">Home</a>
+        
+          <a class="main-nav-link" href="/archives">Archives</a>
+        
+      </nav>
+      <nav id="sub-nav">
+        
+          <a id="nav-rss-link" class="nav-icon" href="/atom.xml" title="RSS Feed"></a>
+        
+        <a id="nav-search-btn" class="nav-icon" title="搜索"></a>
+      </nav>
+      <div id="search-form-wrap">
+        <form action="//google.com/search" method="get" accept-charset="UTF-8" class="search-form"><input type="search" name="q" class="search-form-input" placeholder="Search"><button type="submit" class="search-form-submit">&#xF002;</button><input type="hidden" name="sitesearch" value="http://tutudev.com"></form>
+      </div>
+    </div>
+  </div>
+</header>
+      <div class="outer">
+        <section id="main"><article id="post-objcAssociatedObject" class="article article-type-post" itemscope itemprop="blogPost">
+  <div class="article-meta">
+    <a href="/2016/06/28/objcAssociatedObject/" class="article-date">
+  <time datetime="2016-06-28T07:11:45.000Z" itemprop="datePublished">2016-06-28</time>
+</a>
+    
+  <div class="article-category">
+    <a class="article-category-link" href="/categories/iOS/">iOS</a>
+  </div>
+
+  </div>
+  <div class="article-inner">
+    
+    
+      <header class="article-header">
+        
+  
+    <h1 class="article-title" itemprop="name">
+      Runtime之Associative References
+    </h1>
+  
+
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>Runtime中跟<code>AssociateObject</code>相关的接口如下</p>
+<figure class="highlight objc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> objc_setAssociatedObject(<span class="keyword">id</span> object, <span class="keyword">void</span> *key, <span class="keyword">id</span> value, objc_AssociationPolicy policy)</span><br><span class="line"></span><br><span class="line"><span class="keyword">id</span> objc_getAssociatedObject(<span class="keyword">id</span> object, <span class="keyword">void</span> *key)</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> objc_removeAssociatedObjects(<span class="keyword">id</span> object)</span><br></pre></td></tr></table></figure>
+
+<p>我们来看下<a target="_blank" rel="noopener" href="http://opensource.apple.com/tarballs/objc4/">苹果开源中的实现</a><br>我这里下载的是<a target="_blank" rel="noopener" href="http://opensource.apple.com/tarballs/objc4/objc4-680.tar.gz">objc4-680.tar.gz</a><br>下载源码后从<code>objc-runtime.mm</code>里面找到对应方法，会发现实现在文件<code>objc-references.mm</code></p>
+<p>先看一下相关的结构：  </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// class AssociationsManager manages a lock / hash table singleton pair.</span></span><br><span class="line"><span class="comment">// Allocating an instance acquires the lock, and calling its assocations() method</span></span><br><span class="line"><span class="comment">// lazily allocates it.</span></span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AssociationsManager</span> &#123;</span></span><br><span class="line">    <span class="keyword">static</span> <span class="keyword">spinlock_t</span> _lock;</span><br><span class="line">    <span class="keyword">static</span> AssociationsHashMap *_map;               <span class="comment">// associative references:  object pointer -&gt; PtrPtrHashMap.</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">AssociationsManager</span>()   &#123; _lock.<span class="built_in">lock</span>(); &#125;</span><br><span class="line">    ~<span class="built_in">AssociationsManager</span>()  &#123; _lock.<span class="built_in">unlock</span>(); &#125;</span><br><span class="line">    <span class="comment">//Lazy allocate，这里返回引用应该是为了避免返回指针时被不小心修改  </span></span><br><span class="line">    <span class="function">AssociationsHashMap &amp;<span class="title">associations</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (_map == <span class="literal">NULL</span>)</span><br><span class="line">            _map = <span class="keyword">new</span> <span class="built_in">AssociationsHashMap</span>();</span><br><span class="line">        <span class="keyword">return</span> *_map;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样我们就可以通过</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">AssociationsManager manager;</span><br><span class="line"><span class="function">AssociationsHashMap &amp;<span class="title">associations</span><span class="params">(manager.associations())</span></span>;</span><br></pre></td></tr></table></figure>
+<p>来获取对应的<code>HashMap</code></p>
+<p><code>AssociationsHashMap</code>的结构</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//存储AssociationValue时，包括我们传入的policy和value</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ObjcAssociation</span> &#123;</span></span><br><span class="line">    <span class="keyword">uintptr_t</span> _policy;</span><br><span class="line">    id _value;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">ObjcAssociation</span>(<span class="keyword">uintptr_t</span> policy, id value) : _policy(policy), _value(value) &#123;&#125;</span><br><span class="line">    <span class="built_in">ObjcAssociation</span>() : _policy(<span class="number">0</span>), _value(nil) &#123;&#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">uintptr_t</span> <span class="title">policy</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> _policy; &#125;</span><br><span class="line">    <span class="function">id <span class="title">value</span><span class="params">()</span> <span class="keyword">const</span> </span>&#123; <span class="keyword">return</span> _value; &#125;</span><br><span class="line">    </span><br><span class="line">    <span class="function"><span class="keyword">bool</span> <span class="title">hasValue</span><span class="params">()</span> </span>&#123; <span class="keyword">return</span> _value != nil; &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">//存储的是&lt;AssociationKey, AssociationValue&gt;</span></span><br><span class="line"><span class="keyword">typedef</span> ObjcAllocator&lt;std::pair&lt;<span class="keyword">void</span> * <span class="keyword">const</span>, ObjcAssociation&gt; &gt; ObjectAssociationMapAllocator;</span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">ObjectAssociationMap</span> :</span> <span class="keyword">public</span> std::map&lt;<span class="keyword">void</span> *, ObjcAssociation, ObjectPointerLess, ObjectAssociationMapAllocator&gt; &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> *<span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="keyword">size_t</span> n)</span> </span>&#123; <span class="keyword">return</span> ::<span class="built_in">malloc</span>(n); &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">void</span> *ptr)</span> </span>&#123; ::<span class="built_in">free</span>(ptr); &#125;</span><br><span class="line">&#125;;</span><br><span class="line"><span class="keyword">typedef</span> ObjcAllocator&lt;std::pair&lt;<span class="keyword">const</span> <span class="keyword">disguised_ptr_t</span>, ObjectAssociationMap*&gt; &gt; AssociationsHashMapAllocator;</span><br><span class="line"><span class="comment">//主要关注模板的前两个模板实例化参数</span></span><br><span class="line"><span class="comment">//可以知道该结构是 &lt;disguised_ptr_t, ObjectAssociationMap&gt;</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">AssociationsHashMap</span> :</span> <span class="keyword">public</span> unordered_map&lt;<span class="keyword">disguised_ptr_t</span>, ObjectAssociationMap *, DisguisedPointerHash, DisguisedPointerEqual, AssociationsHashMapAllocator&gt; &#123;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="function"><span class="keyword">void</span> *<span class="keyword">operator</span> <span class="title">new</span><span class="params">(<span class="keyword">size_t</span> n)</span> </span>&#123; <span class="keyword">return</span> ::<span class="built_in">malloc</span>(n); &#125;</span><br><span class="line">    <span class="function"><span class="keyword">void</span> <span class="keyword">operator</span> <span class="title">delete</span><span class="params">(<span class="keyword">void</span> *ptr)</span> </span>&#123; ::<span class="built_in">free</span>(ptr); &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>通过上面我们可以看到我们绑定在OC对象的”属性”是通过一个全局的<code>HashMap&lt;ObjKey, &lt;AssociateObjKey, AssociateObjValue&gt; &gt;</code>来实现的，其实看到这个结构大概能猜到我们对绑定”属性”的get，set以及remove的操作是如何实现的了，不过我们还是看下，<strong>特别是对于我们绑定到对象上的值的释放的细节</strong>。</p>
+<p>主要看下<code>objc_setAssociatedObject</code>，不是很复杂，对应写上注释了。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">objc_setAssociatedObject</span><span class="params">(id object, <span class="keyword">const</span> <span class="keyword">void</span> *key, id value, </span></span></span><br><span class="line"><span class="function"><span class="params">                         objc_AssociationPolicy policy)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">// retain the new value (if any) outside the lock.</span></span><br><span class="line">    <span class="function">ObjcAssociation <span class="title">old_association</span><span class="params">(<span class="number">0</span>, nil)</span></span>;</span><br><span class="line">    <span class="comment">// 1. 这里根据传入的policy预先对value做一些操作：是否retain，是否copy</span></span><br><span class="line">    id new_value = value ? <span class="built_in">acquireValue</span>(value, policy) : nil;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//2. 得到全局的HashMap</span></span><br><span class="line">        AssociationsManager manager;</span><br><span class="line">        <span class="function">AssociationsHashMap &amp;<span class="title">associations</span><span class="params">(manager.associations())</span></span>;</span><br><span class="line">        <span class="comment">//3. 不直接存储指向该OC对象的指针，而是存储经过转换的指针值，目前的实现是对指针去翻</span></span><br><span class="line">        <span class="keyword">disguised_ptr_t</span> disguised_object = <span class="built_in">DISGUISE</span>(object);</span><br><span class="line">        <span class="comment">//4.1 如果value不为空</span></span><br><span class="line">        <span class="keyword">if</span> (new_value) &#123;</span><br><span class="line">            <span class="comment">// break any existing association.</span></span><br><span class="line">            <span class="comment">//5. 先查找HashMap中是否有对应的OC对象的AssociationMap</span></span><br><span class="line">            AssociationsHashMap::iterator i = associations.<span class="built_in">find</span>(disguised_object);</span><br><span class="line">            <span class="comment">//5.1 如果有，而且对应的key有值，则临时保存旧值，并赋值新值</span></span><br><span class="line">            <span class="keyword">if</span> (i != associations.<span class="built_in">end</span>()) &#123;</span><br><span class="line">                <span class="comment">// secondary table exists</span></span><br><span class="line">                ObjectAssociationMap *refs = i-&gt;second;</span><br><span class="line">                ObjectAssociationMap::iterator j = refs-&gt;<span class="built_in">find</span>(key);</span><br><span class="line">                <span class="keyword">if</span> (j != refs-&gt;<span class="built_in">end</span>()) &#123;</span><br><span class="line">                    old_association = j-&gt;second;</span><br><span class="line">                    j-&gt;second = <span class="built_in">ObjcAssociation</span>(policy, new_value);</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    (*refs)[key] = <span class="built_in">ObjcAssociation</span>(policy, new_value);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125; </span><br><span class="line">            <span class="comment">//5.2 如果没有，这新建一个AssociationMap，并添加&lt;key, value&gt;</span></span><br><span class="line">            <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="comment">// create the new association (first time).</span></span><br><span class="line">                ObjectAssociationMap *refs = <span class="keyword">new</span> ObjectAssociationMap;</span><br><span class="line">                associations[disguised_object] = refs;</span><br><span class="line">                (*refs)[key] = <span class="built_in">ObjcAssociation</span>(policy, new_value);</span><br><span class="line">                object-&gt;<span class="built_in">setHasAssociatedObjects</span>();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//4.2 如果value为空，则在对应的AssociationsMap（如果有）中取出旧值，然后删除对应key的节点</span></span><br><span class="line">        <span class="keyword">else</span> &#123;</span><br><span class="line">            <span class="comment">// setting the association to nil breaks the association.</span></span><br><span class="line">            AssociationsHashMap::iterator i = associations.<span class="built_in">find</span>(disguised_object);</span><br><span class="line">            <span class="keyword">if</span> (i !=  associations.<span class="built_in">end</span>()) &#123;</span><br><span class="line">                ObjectAssociationMap *refs = i-&gt;second;</span><br><span class="line">                ObjectAssociationMap::iterator j = refs-&gt;<span class="built_in">find</span>(key);</span><br><span class="line">                <span class="keyword">if</span> (j != refs-&gt;<span class="built_in">end</span>()) &#123;</span><br><span class="line">                    old_association = j-&gt;second;</span><br><span class="line">                    refs-&gt;<span class="built_in">erase</span>(j);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// release the old value (outside of the lock).</span></span><br><span class="line">    <span class="comment">// 5. 如果旧值不为空，释放旧值</span></span><br><span class="line">    <span class="keyword">if</span> (old_association.<span class="built_in">hasValue</span>()) <span class="built_in">ReleaseValue</span>()(old_association);</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p><code>objc_getAssociatedObject</code>和<code>void objc_removeAssociatedObjects</code>比较简单，主要注意一下关于释放的地方</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">id <span class="title">objc_getAssociatedObject</span><span class="params">(id object, <span class="keyword">const</span> <span class="keyword">void</span> *key)</span> </span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    id value = nil;</span><br><span class="line">    <span class="keyword">uintptr_t</span> policy = OBJC_ASSOCIATION_ASSIGN;</span><br><span class="line">    &#123;</span><br><span class="line">        AssociationsManager manager;</span><br><span class="line">        <span class="function">AssociationsHashMap &amp;<span class="title">associations</span><span class="params">(manager.associations())</span></span>;</span><br><span class="line">        <span class="keyword">disguised_ptr_t</span> disguised_object = <span class="built_in">DISGUISE</span>(object);</span><br><span class="line">        AssociationsHashMap::iterator i = associations.<span class="built_in">find</span>(disguised_object);</span><br><span class="line">        <span class="keyword">if</span> (i != associations.<span class="built_in">end</span>()) &#123;</span><br><span class="line">            ObjectAssociationMap *refs = i-&gt;second;</span><br><span class="line">            ObjectAssociationMap::iterator j = refs-&gt;<span class="built_in">find</span>(key);</span><br><span class="line">            <span class="keyword">if</span> (j != refs-&gt;<span class="built_in">end</span>()) &#123;</span><br><span class="line">                ObjcAssociation &amp;entry = j-&gt;second;</span><br><span class="line">                value = entry.<span class="built_in">value</span>();</span><br><span class="line">                policy = entry.<span class="built_in">policy</span>();</span><br><span class="line">                <span class="keyword">if</span> (policy &amp; OBJC_ASSOCIATION_GETTER_RETAIN) ((<span class="built_in">id</span>(*)(id, SEL))objc_msgSend)(value, SEL_retain);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">//如果有 GETTER_AUTORELEASE的flag，则给它发送一个autorelease消息</span></span><br><span class="line">    <span class="keyword">if</span> (value &amp;&amp; (policy &amp; OBJC_ASSOCIATION_GETTER_AUTORELEASE)) &#123;</span><br><span class="line">        ((<span class="built_in">id</span>(*)(id, SEL))objc_msgSend)(value, SEL_autorelease);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">return</span> value;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> _object_remove_assocations(id object) &#123;</span><br><span class="line">    vector&lt; ObjcAssociation,ObjcAllocator&lt;ObjcAssociation&gt; &gt; elements;</span><br><span class="line">    &#123;</span><br><span class="line">        AssociationsManager manager;</span><br><span class="line">        <span class="function">AssociationsHashMap &amp;<span class="title">associations</span><span class="params">(manager.associations())</span></span>;</span><br><span class="line">        <span class="keyword">if</span> (associations.<span class="built_in">size</span>() == <span class="number">0</span>) <span class="keyword">return</span>;</span><br><span class="line">        <span class="keyword">disguised_ptr_t</span> disguised_object = <span class="built_in">DISGUISE</span>(object);</span><br><span class="line">        AssociationsHashMap::iterator i = associations.<span class="built_in">find</span>(disguised_object);</span><br><span class="line">        <span class="keyword">if</span> (i != associations.<span class="built_in">end</span>()) &#123;</span><br><span class="line">            <span class="comment">// copy all of the associations that need to be removed.</span></span><br><span class="line">            ObjectAssociationMap *refs = i-&gt;second;</span><br><span class="line">            <span class="keyword">for</span> (ObjectAssociationMap::iterator j = refs-&gt;<span class="built_in">begin</span>(), end = refs-&gt;<span class="built_in">end</span>(); j != end; ++j) &#123;</span><br><span class="line">                elements.<span class="built_in">push_back</span>(j-&gt;second);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="comment">// remove the secondary table.</span></span><br><span class="line">            <span class="keyword">delete</span> refs;</span><br><span class="line">            associations.<span class="built_in">erase</span>(i);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// the calls to releaseValue() happen outside of the lock.</span></span><br><span class="line">    for_each(elements.<span class="built_in">begin</span>(), elements.<span class="built_in">end</span>(), <span class="built_in">ReleaseValue</span>());</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>整体来看，实现不是很复杂，不过可以看到两个关于C++的”技巧”，我也不知道能不能称为技巧～  </p>
+<ol>
+<li>是获取HashMap时返回的是引用</li>
+<li>是在存储指针时不直接存储指针的值，而是存储变换后的值（变换操作必须可逆），在取的时候逆向运算一下  </li>
+</ol>
+
+      
+    </div>
+    <footer class="article-footer">
+      <a data-url="http://tutudev.com/2016/06/28/objcAssociatedObject/" data-id="cko14ljgp0008679y1ore4v2k" class="article-share-link">Share</a>
+      
+      
+  <ul class="article-tag-list" itemprop="keywords"><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/Runtime/" rel="tag">Runtime</a></li><li class="article-tag-list-item"><a class="article-tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li></ul>
+
+    </footer>
+  </div>
+  
+    
+<nav id="article-nav">
+  
+    <a href="/2016/06/30/iosbeforemain/" id="article-nav-newer" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Newer</strong>
+      <div class="article-nav-title">
+        
+          App进入Main之前做的事情
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2016/06/28/runloop/" id="article-nav-older" class="article-nav-link-wrap">
+      <strong class="article-nav-caption">Older</strong>
+      <div class="article-nav-title">RunLoop源码观察</div>
+    </a>
+  
+</nav>
+
+  
+</article>
+
+</section>
+        
+          <aside id="sidebar">
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">分类</h3>
+    <div class="widget">
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Coding/">Coding</a></li><li class="category-list-item"><a class="category-list-link" href="/categories/iOS/">iOS</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签</h3>
+    <div class="widget">
+      <ul class="tag-list" itemprop="keywords"><li class="tag-list-item"><a class="tag-list-link" href="/tags/Code-Push/" rel="tag">Code-Push</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Hexo/" rel="tag">Hexo</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Pacman/" rel="tag">Pacman</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/React-Native/" rel="tag">React Native</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/RunLoop/" rel="tag">RunLoop</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/Runtime/" rel="tag">Runtime</a></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/iOS/" rel="tag">iOS</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">标签云</h3>
+    <div class="widget tagcloud">
+      <a href="/tags/Code-Push/" style="font-size: 10px;">Code-Push</a> <a href="/tags/Hexo/" style="font-size: 10px;">Hexo</a> <a href="/tags/Pacman/" style="font-size: 10px;">Pacman</a> <a href="/tags/React-Native/" style="font-size: 10px;">React Native</a> <a href="/tags/RunLoop/" style="font-size: 10px;">RunLoop</a> <a href="/tags/Runtime/" style="font-size: 15px;">Runtime</a> <a href="/tags/iOS/" style="font-size: 20px;">iOS</a>
+    </div>
+  </div>
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">归档</h3>
+    <div class="widget">
+      <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/06/">六月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/05/">五月 2016</a></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2016/04/">四月 2016</a></li></ul>
+    </div>
+  </div>
+
+
+  
+    
+  <div class="widget-wrap">
+    <h3 class="widget-title">最新文章</h3>
+    <div class="widget">
+      <ul>
+        
+          <li>
+            <a href="/2016/06/30/iosbeforemain/">App进入Main之前做的事情</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/28/objcAssociatedObject/">Runtime之Associative References</a>
+          </li>
+        
+          <li>
+            <a href="/2016/06/28/runloop/">RunLoop源码观察</a>
+          </li>
+        
+          <li>
+            <a href="/2016/05/11/code-push-tutorial/">Code-Push使用经验(仅iOS)</a>
+          </li>
+        
+          <li>
+            <a href="/2016/04/26/React-Native-Study/">React Native 学习记录 － JS和OC通信流程</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+
+  
+</aside>
+        
+      </div>
+      <footer id="footer">
+  
+  <div class="outer">
+    <div id="footer-info" class="inner">
+      &copy; 2021 Tu Fei<br>
+      Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>
+    </div>
+  </div>
+</footer>
+    </div>
+    <nav id="mobile-nav">
+  
+    <a href="/" class="mobile-nav-link">Home</a>
+  
+    <a href="/archives" class="mobile-nav-link">Archives</a>
+  
+</nav>
+    
+
+<script src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+
+  
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css">
+
+  
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+
+
+
+
+<script src="/js/script.js"></script>
+
+
+  </div>
+</body>
+</html>
