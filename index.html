@@ -14,7 +14,7 @@
 
 <link rel="stylesheet" href="/css/main.css">
 
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Helvetica:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
@@ -240,6 +240,11 @@ This file is created by Marboo<http://marboo.io> template file $MARBOO_HOME/.med
 
 <p>我们知道，程序的”启动入口”在<code>main</code>函数，但这是从我们的程序逻辑来看的。实际上操作系统在加载我们的二进制可执行文件时，执行到<code>main</code>之前做了不少事情。比如oc的runtime运行库环境就是在main之前建立好的。<br>我们来一起看看在<code>main</code>之前到底做了什么。  </p>
           <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/06/30/iosbeforemain/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
           <!--/noindex-->
         
       
@@ -332,6 +337,11 @@ This file is created by Marboo<http://marboo.io> template file $MARBOO_HOME/.med
 
 <p>我们来看下<a target="_blank" rel="noopener" href="http://opensource.apple.com/tarballs/objc4/">苹果开源中的实现</a><br>我这里下载的是<a target="_blank" rel="noopener" href="http://opensource.apple.com/tarballs/objc4/objc4-680.tar.gz">objc4-680.tar.gz</a><br>下载源码后从<code>objc-runtime.mm</code>里面找到对应方法，会发现实现在文件<code>objc-references.mm</code></p>
           <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/06/28/objcAssociatedObject/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
           <!--/noindex-->
         
       
@@ -429,6 +439,11 @@ This file is created by Marboo<http://marboo.io> template file $MARBOO_HOME/.med
 
 <p>源码可以在这里<a target="_blank" rel="noopener" href="http://opensource.apple.com/tarballs/CF/">下载</a><br>文件 <code>CFRunLoop.c CFRunLoop.h</code><br>这篇是在看了<a target="_blank" rel="noopener" href="http://blog.ibireme.com/2015/05/18/runloop/">ibireme的深入理解RunLoop</a>后自己对照源码并编写测试的一些记录</p>
           <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/06/28/runloop/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
           <!--/noindex-->
         
       
@@ -525,6 +540,11 @@ This file is created by Marboo<http://marboo.io> template file $MARBOO_HOME/.med
 <li><p>安装到本地工程<br>主要是将react-native-code-push工程加入到我们的本地工程里面去，<a target="_blank" rel="noopener" href="https://github.com/Microsoft/react-native-code-push#getting-started">参考官方文档。</a><br> <strong>iOS</strong>中修改加载js文件的路径代码，推荐写法：</p>
  <figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">NSURL *jsCodeLocation;</span><br><span class="line"></span><br><span class="line">#ifdef DEBUG</span><br><span class="line">    jsCodeLocation &#x3D; [NSURL URLWithString:@&quot;http:&#x2F;&#x2F;localhost:8081&#x2F;index.ios.bundle?platform&#x3D;ios&amp;dev&#x3D;true&quot;];</span><br><span class="line">#else</span><br><span class="line">    jsCodeLocation &#x3D; [CodePush bundleURL];  &#x2F;&#x2F;这里默认是main.jsbundle的js文件名，如果是其他文件名，请使用其他接口来获取bundleURL</span><br><span class="line">#endif</span><br></pre></td></tr></table></figure>
           <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/05/11/code-push-tutorial/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
           <!--/noindex-->
         
       
@@ -617,6 +637,11 @@ This file is created by Marboo<http://marboo.io> template file $MARBOO_HOME/.med
 <p>React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about - <strong>learn once, write anywhere</strong>. Facebook uses React Native in multiple production apps and will continue investing in React Native.</p>
 </blockquote>
           <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/04/26/React-Native-Study/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
           <!--/noindex-->
         
       
@@ -705,6 +730,11 @@ This file is created by Marboo<http://marboo.io> template file $MARBOO_HOME/.med
 <li>图床使用<a target="_blank" rel="noopener" href="http://www.qiniu.com/">七牛</a>，可以使用提供的接口命令行传图片会更方便一点。</li>
 </ol>
           <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2016/04/25/firstblog/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
           <!--/noindex-->
         
       
