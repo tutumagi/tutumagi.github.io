@@ -1,101 +1,232 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Title -->
-<title>App进入Main之前做的事情 - Tutu&#39;s Blog</title>
-
-<!-- Icon -->
-<link rel="icon" href="/favicon.ico">
-
-<!-- Fonts -->
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" as="style" onload="this.onload=null, this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"></noscript>
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
 
 
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-<!-- Style -->
-
-<link rel="stylesheet" href="/styles/main.css">
-
-<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-theme-pure@1.0.1/dist/main.css"> -->
+<link rel="stylesheet" href="/css/main.css">
 
 
 
-    <meta name="generator" content="Hexo 5.4.0"></head>
-    <body>
-        <div class="main gt-bg-theme-color-first">
-            <div class="main-content">
-                <nav class="navbar navbar-expand-lg">
-    <div class="navbar-brand">
-        <img class="user-avatar" src="/favicon.png" alt="头像">
-        <div class="site-name gt-c-content-color-first">
-            
-        </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;tutudev.com&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.3.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="App进入Main之前做的事情  我们知道，程序的”启动入口”在main函数，但这是从我们的程序逻辑来看的。实际上操作系统在加载我们的二进制可执行文件时，执行到main之前做了不少事情。比如oc的runtime运行库环境就是在main之前建立好的。我们来一起看看在main之前到底做了什么。先从OC的runtime的入口函数着手，_objc_init，我们符号断点一下，可以看到 可以看到入口在_dy">
+<meta property="og:type" content="article">
+<meta property="og:title" content="App进入Main之前做的事情">
+<meta property="og:url" content="http://tutudev.com/2016/06/30/iosbeforemain/index.html">
+<meta property="og:site_name" content="Tutu&#39;s Blog">
+<meta property="og:description" content="App进入Main之前做的事情  我们知道，程序的”启动入口”在main函数，但这是从我们的程序逻辑来看的。实际上操作系统在加载我们的二进制可执行文件时，执行到main之前做了不少事情。比如oc的runtime运行库环境就是在main之前建立好的。我们来一起看看在main之前到底做了什么。先从OC的runtime的入口函数着手，_objc_init，我们符号断点一下，可以看到 可以看到入口在_dy">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://7xsw3s.com1.z0.glb.clouddn.com/1467193628830">
+<meta property="og:image" content="http://7xsw3s.com1.z0.glb.clouddn.com/1467193940225">
+<meta property="article:published_time" content="2016-06-29T16:15:09.000Z">
+<meta property="article:modified_time" content="2021-04-28T07:25:45.507Z">
+<meta property="article:author" content="Tu Fei">
+<meta property="article:tag" content="iOS">
+<meta property="article:tag" content="Runtime">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://7xsw3s.com1.z0.glb.clouddn.com/1467193628830">
+
+
+<link rel="canonical" href="http://tutudev.com/2016/06/30/iosbeforemain/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;http:&#x2F;&#x2F;tutudev.com&#x2F;2016&#x2F;06&#x2F;30&#x2F;iosbeforemain&#x2F;&quot;,&quot;path&quot;:&quot;2016&#x2F;06&#x2F;30&#x2F;iosbeforemain&#x2F;&quot;,&quot;title&quot;:&quot;App进入Main之前做的事情&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>App进入Main之前做的事情 | Tutu's Blog</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
     </div>
-    <button aria-label="Navbar Toggler" class="navbar-toggler" type="button" id="changeNavbar">
-        <i class="gt-c-content-color-first" style="font-size: 18px;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="18px" fill="currentColor">
-                <path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z" />
-            </svg>
-        </i>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <div class="navbar-nav mr-auto" style="text-align: center; ">
-            
-                <div class="nav-item">
-                    <a href="/" class="menu gt-a-link" target="_self">首页</a>
-                </div>
-            
-                <div class="nav-item">
-                    <a href="/archives/" class="menu gt-a-link" target="_self">归档</a>
-                </div>
-            
-                <div class="nav-item">
-                    <a href="/tags/" class="menu gt-a-link" target="_self">标签</a>
-                </div>
-            
-                <div class="nav-item">
-                    <a href="/friends/" class="menu gt-a-link" target="_self">友链</a>
-                </div>
-            
-        </div>
-    </div>
-</nav>
+  </div>
 
-<script>
-    /* 移动端导航栏展开/收起切换 */
-    document.getElementById('changeNavbar').onclick = function() {
-        let element = document.getElementById('navbarSupportedContent');
-        if (element.style.display === 'none' || element.style.display === '') {
-            element.style.display = 'block';
-        } else { 
-            element.style.display = 'none';
-        }
-    }
-</script>
-                <div class="post-container">
-    <div class="post-detail gt-bg-theme-color-second gt-c-content-color-first">
-        <article class="gt-post-content">
-            <h1 class="post-title">App进入Main之前做的事情</h1>
-            <div class="post-info">
-                <time class="post-time gt-c-content-color-first">
-                    · 2016-06-30 ·</time>
-                
-                    
-                        <a href="/tags/iOS/" class="post-tag">
-                            #iOS</a>
-                    
-                        <a href="/tags/Runtime/" class="post-tag">
-                            #Runtime</a>
-                    
-                
-            </div>
-            <hr>
-            <div class="post-content gt-c-content-color-first">
-                <h1 id="App进入Main之前做的事情"><a href="#App进入Main之前做的事情" class="headerlink" title="App进入Main之前做的事情"></a>App进入Main之前做的事情</h1><!--
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Tutu's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#App%E8%BF%9B%E5%85%A5Main%E4%B9%8B%E5%89%8D%E5%81%9A%E7%9A%84%E4%BA%8B%E6%83%85"><span class="nav-number">1.</span> <span class="nav-text">App进入Main之前做的事情</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#dyld"><span class="nav-number">1.1.</span> <span class="nav-text">dyld</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#ImageLoader"><span class="nav-number">1.2.</span> <span class="nav-text">ImageLoader</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Tu Fei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://tutudev.com/2016/06/30/iosbeforemain/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Tu Fei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tutu's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          App进入Main之前做的事情
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-06-30 00:15:09" itemprop="dateCreated datePublished" datetime="2016-06-30T00:15:09+08:00">2016-06-30</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-28 15:25:45" itemprop="dateModified" datetime="2021-04-28T15:25:45+08:00">2021-04-28</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/iOS/" itemprop="url" rel="index"><span itemprop="name">iOS</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h1 id="App进入Main之前做的事情"><a href="#App进入Main之前做的事情" class="headerlink" title="App进入Main之前做的事情"></a>App进入Main之前做的事情</h1><!--
 create time: 2016-06-29 15:21:30
 Author: tufei
 
@@ -127,38 +258,75 @@ This file is created by Marboo<http://marboo.io> template file $MARBOO_HOME/.med
   <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><span class="line">  <span class="keyword">const</span> <span class="keyword">char</span> *</span><br><span class="line"><span class="built_in">map_images_nolock</span>(<span class="keyword">enum</span> dyld_image_states state, <span class="keyword">uint32_t</span> infoCount,</span><br><span class="line">                  <span class="keyword">const</span> struct dyld_image_info infoList[])</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">bool</span> firstTime = YES;</span><br><span class="line">        <span class="keyword">static</span> <span class="keyword">bool</span> wantsGC = NO;</span><br><span class="line">        <span class="keyword">uint32_t</span> i;</span><br><span class="line">        header_info *hi;</span><br><span class="line">        header_info *hList[infoCount];</span><br><span class="line">        <span class="keyword">uint32_t</span> hCount;</span><br><span class="line">        <span class="keyword">size_t</span> selrefCount = <span class="number">0</span>;</span><br><span class="line">    </span><br><span class="line">        <span class="comment">// Perform first-time initialization if necessary.</span></span><br><span class="line">        <span class="comment">// This function is called before ordinary library initializers. </span></span><br><span class="line">        <span class="comment">// fixme defer initialization until an objc-using image is found?</span></span><br><span class="line">        <span class="keyword">if</span> (firstTime) &#123;</span><br><span class="line">            <span class="built_in">preopt_init</span>();</span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">        <span class="comment">// Find all images with Objective-C metadata.</span></span><br><span class="line">        hCount = <span class="number">0</span>;</span><br><span class="line">        i = infoCount;</span><br><span class="line">        <span class="comment">//收集infoList中的所有header信息并存储在一个单链表</span></span><br><span class="line">        <span class="keyword">while</span> (i--) &#123;</span><br><span class="line">            <span class="keyword">const</span> headerType *mhdr = (headerType *)infoList[i].imageLoadAddress;</span><br><span class="line">    </span><br><span class="line">            hi = <span class="built_in">addHeader</span>(mhdr);</span><br><span class="line">            <span class="keyword">if</span> (!hi) &#123;</span><br><span class="line">                <span class="comment">// no objc data in this entry</span></span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            &#125;</span><br><span class="line">    </span><br><span class="line">            <span class="keyword">if</span> (mhdr-&gt;filetype == MH_EXECUTE) &#123;</span><br><span class="line">                <span class="comment">// Size some data structures based on main executable&#x27;s size</span></span><br><span class="line">                <span class="keyword">size_t</span> count;</span><br><span class="line">                _getObjc2SelectorRefs(hi, &amp;count);</span><br><span class="line">                selrefCount += count;</span><br><span class="line">                _getObjc2MessageRefs(hi, &amp;count);</span><br><span class="line">                selrefCount += count;</span><br><span class="line">            &#125;</span><br><span class="line">    </span><br><span class="line">            hList[hCount++] = hi;</span><br><span class="line">            </span><br><span class="line">        &#125;</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">if</span> (firstTime) &#123;</span><br><span class="line">            <span class="comment">//注册一些我们常用的函数，比如load,alloc,dealloc等等</span></span><br><span class="line">            <span class="comment">//并使用selrefCount的值 去创建一个capacity为这个值的全局Map</span></span><br><span class="line">            <span class="built_in">sel_init</span>(wantsGC, selrefCount);</span><br><span class="line">            <span class="comment">//初始化AutoreleasePool，和一个SideTable，SideTable是干啥的也没弄清楚，暂时不管，这里不重要</span></span><br><span class="line">            <span class="built_in">arr_init</span>();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//重点是这个，这个会去读取hList里面的所有的image</span></span><br><span class="line">        <span class="comment">//中的classes，categories，protocols并存储在内存中</span></span><br><span class="line">        <span class="comment">//使我们之后使用runtime方法提供了前提，比如方法替换，消息转发等等</span></span><br><span class="line">        _read_images(hList, hCount);</span><br><span class="line">    </span><br><span class="line">        firstTime = NO;</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">return</span> <span class="literal">NULL</span>;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
 <p>  看完回调的实现后，回到<code>dyld</code>在加载<code>libdipsatch.dylib</code>后，再加载其他镜像时，就会跑到这些回调，所有这些镜像内部的OC对象，方法，分类，协议等信息都会在runtime中存储好。一切就绪后，就开始跑到我们<code>main</code>函数了。</p>
 
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+              <a href="/tags/Runtime/" rel="tag"># Runtime</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/06/28/objcAssociatedObject/" rel="prev" title="Runtime之Associative References">
+                  <i class="fa fa-chevron-left"></i> Runtime之Associative References
+                </a>
             </div>
-        </article>
-    </div>
-    <br>
-    
-        <div class="next-prev-post">
-            
-            
-                <div class="next-post">
-                    <div class="next gt-c-content-color-first">
-                        下一篇：<a href="/2016/06/28/objcAssociatedObject/" 
-                            class="post-title gt-a-link">Runtime之Associative References</a>
-                    </div>
-                </div>
-            
-        </div>
-    
-    
-</div>
-                <div class="site-footer gt-c-content-color-first">
-    <div class="footer-main">
-        <!-- 建议保留版权信息或者添加主题信息到友链，感谢您的理解 -->
-        <!-- 文件位置：layout/_includes/footer.ejs -->
-        <span style="text-align: right; float: right;">Theme <a 
-            href="https://github.com/renbaoshuo/hexo-theme-pure" target="_blank">Pure</a> | Powered by <a 
-            href="https://hexo.io" target="_blank">Hexo</a></span>
-        <span style="text-align: left;">Footer HTML
-</span>
-    </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
 </div>
 
-            </div>
-        </div>
-    </body>
+
+
+
+
+<script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tu Fei</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
 </html>

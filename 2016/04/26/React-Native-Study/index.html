@@ -1,101 +1,232 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
-    <head>
-        <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-
-<!-- Title -->
-<title>React Native 学习记录 － JS和OC通信流程 - Tutu&#39;s Blog</title>
-
-<!-- Icon -->
-<link rel="icon" href="/favicon.ico">
-
-<!-- Fonts -->
-<link rel="preload" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap" as="style" onload="this.onload=null, this.rel='stylesheet'">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital@0;1&family=Open+Sans:ital,wght@0,400;0,700;1,400;1,700&display=swap"></noscript>
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 5.4.0">
 
 
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
 
-<!-- Style -->
-
-<link rel="stylesheet" href="/styles/main.css">
-
-<!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/hexo-theme-pure@1.0.1/dist/main.css"> -->
+<link rel="stylesheet" href="/css/main.css">
 
 
 
-    <meta name="generator" content="Hexo 5.4.0"></head>
-    <body>
-        <div class="main gt-bg-theme-color-first">
-            <div class="main-content">
-                <nav class="navbar navbar-expand-lg">
-    <div class="navbar-brand">
-        <img class="user-avatar" src="/favicon.png" alt="头像">
-        <div class="site-name gt-c-content-color-first">
-            
-        </div>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.3/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/animate.css@3.1.1/animate.min.css">
+
+<script class="next-config" data-name="main" type="application/json">{&quot;hostname&quot;:&quot;tutudev.com&quot;,&quot;root&quot;:&quot;&#x2F;&quot;,&quot;images&quot;:&quot;&#x2F;images&quot;,&quot;scheme&quot;:&quot;Muse&quot;,&quot;version&quot;:&quot;8.3.0&quot;,&quot;exturl&quot;:false,&quot;sidebar&quot;:{&quot;position&quot;:&quot;left&quot;,&quot;display&quot;:&quot;post&quot;,&quot;padding&quot;:18,&quot;offset&quot;:12},&quot;copycode&quot;:false,&quot;bookmark&quot;:{&quot;enable&quot;:false,&quot;color&quot;:&quot;#222&quot;,&quot;save&quot;:&quot;auto&quot;},&quot;fancybox&quot;:false,&quot;mediumzoom&quot;:false,&quot;lazyload&quot;:false,&quot;pangu&quot;:false,&quot;comments&quot;:{&quot;style&quot;:&quot;tabs&quot;,&quot;active&quot;:null,&quot;storage&quot;:true,&quot;lazyload&quot;:false,&quot;nav&quot;:null},&quot;motion&quot;:{&quot;enable&quot;:true,&quot;async&quot;:false,&quot;transition&quot;:{&quot;post_block&quot;:&quot;fadeIn&quot;,&quot;post_header&quot;:&quot;fadeInDown&quot;,&quot;post_body&quot;:&quot;fadeInDown&quot;,&quot;coll_header&quot;:&quot;fadeInLeft&quot;,&quot;sidebar&quot;:&quot;fadeInUp&quot;}},&quot;prism&quot;:false,&quot;i18n&quot;:{&quot;placeholder&quot;:&quot;搜索...&quot;,&quot;empty&quot;:&quot;没有找到任何搜索结果：${query}&quot;,&quot;hits_time&quot;:&quot;找到 ${hits} 个搜索结果（用时 ${time} 毫秒）&quot;,&quot;hits&quot;:&quot;找到 ${hits} 个搜索结果&quot;}}</script>
+<meta name="description" content="什么是React NativeReact Native 是Facebook出的一套开源框架，框架的作用是开发者特别是前端开发者可以使用JavaScript + React编写，但是会被“翻译”成原生代码执行。体验比纯粹的使用WebView去运行H5+JS语言更好，效率更高。这是官方的介绍，可以让你构建出世界级的应用哦，是不是很心动？！  React Native enables you to bu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="React Native 学习记录 － JS和OC通信流程">
+<meta property="og:url" content="http://tutudev.com/2016/04/26/React-Native-Study/index.html">
+<meta property="og:site_name" content="Tutu&#39;s Blog">
+<meta property="og:description" content="什么是React NativeReact Native 是Facebook出的一套开源框架，框架的作用是开发者特别是前端开发者可以使用JavaScript + React编写，但是会被“翻译”成原生代码执行。体验比纯粹的使用WebView去运行H5+JS语言更好，效率更高。这是官方的介绍，可以让你构建出世界级的应用哦，是不是很心动？！  React Native enables you to bu">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="http://7xsw3s.com2.z0.glb.clouddn.com/image%2Fjpg%2F1460484959926">
+<meta property="og:image" content="http://7xsw3s.com2.z0.glb.clouddn.com/1460904823619">
+<meta property="article:published_time" content="2016-04-26T14:01:34.000Z">
+<meta property="article:modified_time" content="2021-04-28T07:25:45.506Z">
+<meta property="article:author" content="Tu Fei">
+<meta property="article:tag" content="React Native">
+<meta property="article:tag" content="iOS">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://7xsw3s.com2.z0.glb.clouddn.com/image%2Fjpg%2F1460484959926">
+
+
+<link rel="canonical" href="http://tutudev.com/2016/04/26/React-Native-Study/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{&quot;sidebar&quot;:&quot;&quot;,&quot;isHome&quot;:false,&quot;isPost&quot;:true,&quot;lang&quot;:&quot;zh-CN&quot;,&quot;comments&quot;:true,&quot;permalink&quot;:&quot;http:&#x2F;&#x2F;tutudev.com&#x2F;2016&#x2F;04&#x2F;26&#x2F;React-Native-Study&#x2F;&quot;,&quot;path&quot;:&quot;2016&#x2F;04&#x2F;26&#x2F;React-Native-Study&#x2F;&quot;,&quot;title&quot;:&quot;React Native 学习记录 － JS和OC通信流程&quot;}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">&quot;&quot;</script>
+<title>React Native 学习记录 － JS和OC通信流程 | Tutu's Blog</title><script src="/js/config.js"></script>
+  
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
     </div>
-    <button aria-label="Navbar Toggler" class="navbar-toggler" type="button" id="changeNavbar">
-        <i class="gt-c-content-color-first" style="font-size: 18px;">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" height="18px" fill="currentColor">
-                <path d="M16 132h416c8.837 0 16-7.163 16-16V76c0-8.837-7.163-16-16-16H16C7.163 60 0 67.163 0 76v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16zm0 160h416c8.837 0 16-7.163 16-16v-40c0-8.837-7.163-16-16-16H16c-8.837 0-16 7.163-16 16v40c0 8.837 7.163 16 16 16z" />
-            </svg>
-        </i>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
-        <div class="navbar-nav mr-auto" style="text-align: center; ">
-            
-                <div class="nav-item">
-                    <a href="/" class="menu gt-a-link" target="_self">首页</a>
-                </div>
-            
-                <div class="nav-item">
-                    <a href="/archives/" class="menu gt-a-link" target="_self">归档</a>
-                </div>
-            
-                <div class="nav-item">
-                    <a href="/tags/" class="menu gt-a-link" target="_self">标签</a>
-                </div>
-            
-                <div class="nav-item">
-                    <a href="/friends/" class="menu gt-a-link" target="_self">友链</a>
-                </div>
-            
-        </div>
-    </div>
-</nav>
+  </div>
 
-<script>
-    /* 移动端导航栏展开/收起切换 */
-    document.getElementById('changeNavbar').onclick = function() {
-        let element = document.getElementById('navbarSupportedContent');
-        if (element.style.display === 'none' || element.style.display === '') {
-            element.style.display = 'block';
-        } else { 
-            element.style.display = 'none';
-        }
-    }
-</script>
-                <div class="post-container">
-    <div class="post-detail gt-bg-theme-color-second gt-c-content-color-first">
-        <article class="gt-post-content">
-            <h1 class="post-title">React Native 学习记录 － JS和OC通信流程</h1>
-            <div class="post-info">
-                <time class="post-time gt-c-content-color-first">
-                    · 2016-04-26 ·</time>
-                
-                    
-                        <a href="/tags/React-Native/" class="post-tag">
-                            #React Native</a>
-                    
-                        <a href="/tags/iOS/" class="post-tag">
-                            #iOS</a>
-                    
-                
-            </div>
-            <hr>
-            <div class="post-content gt-c-content-color-first">
-                <h2 id="什么是React-Native"><a href="#什么是React-Native" class="headerlink" title="什么是React Native"></a>什么是React Native</h2><p><a target="_blank" rel="noopener" href="https://facebook.github.io/react-native/">React Native</a> 是Facebook出的一套开源框架，框架的作用是开发者特别是前端开发者可以使用<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> + <a target="_blank" rel="noopener" href="http://facebook.github.io/react/">React</a>编写，但是会被“翻译”成原生代码执行。体验比纯粹的使用WebView去运行H5+JS语言更好，效率更高。<br>这是<a target="_blank" rel="noopener" href="https://facebook.github.io/react-native/">官方</a>的介绍，可以让你构建出<strong>世界级</strong>的应用哦，是不是很心动？！</p>
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <h1 class="site-title">Tutu's Blog</h1>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+</div>
+        
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFReact-Native"><span class="nav-number">1.</span> <span class="nav-text">什么是React Native</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#React-Native%E7%BB%99%E6%88%91%E4%BB%AC%E5%B8%A6%E6%9D%A5%E4%BA%86%E4%BB%80%E4%B9%88"><span class="nav-number">2.</span> <span class="nav-text">React Native给我们带来了什么</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#React-Native%E7%8E%B0%E7%8A%B6"><span class="nav-number">3.</span> <span class="nav-text">React Native现状</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#React-Native%E5%8E%9F%E7%90%86"><span class="nav-number">4.</span> <span class="nav-text">React Native原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#JavaScript-%E5%92%8C-Objective-C-%E9%80%9A%E4%BF%A1%E5%8E%9F%E7%90%86"><span class="nav-number">4.1.</span> <span class="nav-text">JavaScript 和 Objective-C 通信原理</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#Native-Module-%E6%A0%B8%E5%BF%83%E4%BB%A3%E7%A0%81"><span class="nav-number">4.1.1.</span> <span class="nav-text">Native Module 核心代码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Runtime"><span class="nav-number">4.1.2.</span> <span class="nav-text">Runtime</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E9%80%9A%E4%BF%A1"><span class="nav-number">4.1.3.</span> <span class="nav-text">通信</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%B2%E6%9F%93%E6%9C%BA%E5%88%B6"><span class="nav-number">4.2.</span> <span class="nav-text">渲染机制</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9C%8B%E7%9C%8B%E5%88%AB%E4%BA%BA%E6%80%8E%E4%B9%88%E8%AF%B4"><span class="nav-number">5.</span> <span class="nav-text">看看别人怎么说</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AD%A6%E4%B9%A0%E6%9B%B2%E7%BA%BF"><span class="nav-number">6.</span> <span class="nav-text">学习曲线</span></a></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author site-overview-item animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">Tu Fei</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap site-overview-item animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives">
+          <span class="site-state-item-count">6</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+        <span class="site-state-item-count">2</span>
+        <span class="site-state-item-name">分类</span>
+      </div>
+      <div class="site-state-item site-state-tags">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">标签</span>
+      </div>
+  </nav>
+</div>
+
+
+
+        </div>
+      </div>
+    </div>
+  </aside>
+  <div class="sidebar-dimmer"></div>
+
+
+    </header>
+
+    
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="http://tutudev.com/2016/04/26/React-Native-Study/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="Tu Fei">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Tutu's Blog">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          React Native 学习记录 － JS和OC通信流程
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2016-04-26 22:01:34" itemprop="dateCreated datePublished" datetime="2016-04-26T22:01:34+08:00">2016-04-26</time>
+    </span>
+      <span class="post-meta-item">
+        <span class="post-meta-item-icon">
+          <i class="far fa-calendar-check"></i>
+        </span>
+        <span class="post-meta-item-text">更新于</span>
+        <time title="修改时间：2021-04-28 15:25:45" itemprop="dateModified" datetime="2021-04-28T15:25:45+08:00">2021-04-28</time>
+      </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/Coding/" itemprop="url" rel="index"><span itemprop="name">Coding</span></a>
+        </span>
+    </span>
+
+  
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+        <h2 id="什么是React-Native"><a href="#什么是React-Native" class="headerlink" title="什么是React Native"></a>什么是React Native</h2><p><a target="_blank" rel="noopener" href="https://facebook.github.io/react-native/">React Native</a> 是Facebook出的一套开源框架，框架的作用是开发者特别是前端开发者可以使用<a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a> + <a target="_blank" rel="noopener" href="http://facebook.github.io/react/">React</a>编写，但是会被“翻译”成原生代码执行。体验比纯粹的使用WebView去运行H5+JS语言更好，效率更高。<br>这是<a target="_blank" rel="noopener" href="https://facebook.github.io/react-native/">官方</a>的介绍，可以让你构建出<strong>世界级</strong>的应用哦，是不是很心动？！</p>
 <blockquote>
 <p>React Native enables you to build world-class application experiences on native platforms using a consistent developer experience based on JavaScript and React. The focus of React Native is on developer efficiency across all the platforms you care about - <strong>learn once, write anywhere</strong>. Facebook uses React Native in multiple production apps and will continue investing in React Native.</p>
 </blockquote>
@@ -145,45 +276,78 @@
 <h2 id="学习曲线"><a href="#学习曲线" class="headerlink" title="学习曲线"></a>学习曲线</h2><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/en-US/docs/Web/JavaScript">JavaScript</a><br><a target="_blank" rel="noopener" href="https://facebook.github.io/react/docs/jsx-in-depth.html">JSX</a><br><a target="_blank" rel="noopener" href="http://facebook.github.io/react/index.html">React</a><br><a target="_blank" rel="noopener" href="https://github.com/facebook/css-layout">CSS-Layout</a><br><a target="_blank" rel="noopener" href="https://facebook.github.io/flux/docs/overview.html">Flux</a><br>Github上的中英文有关ReactNative的学习仓库：<br><a target="_blank" rel="noopener" href="https://github.com/ele828/react-native-guide">中文整理资料</a><br><a target="_blank" rel="noopener" href="https://github.com/jondot/awesome-react-native">英文整理资料</a><br>前端开发者还得了解常用的iOS以及Android的View结构以及移动设备的体验习惯。</p>
 <p><strong>完</strong></p>
 
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/React-Native/" rel="tag"># React Native</a>
+              <a href="/tags/iOS/" rel="tag"># iOS</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2016/04/25/firstblog/" rel="prev" title="第一篇博客">
+                  <i class="fa fa-chevron-left"></i> 第一篇博客
+                </a>
             </div>
-        </article>
-    </div>
-    <br>
-    
-        <div class="next-prev-post">
-            
-                <div class="prev-post">
-                    <div class="prev gt-c-content-color-first">
-                        上一篇：<a href="/2016/05/11/code-push-tutorial/" 
-                            class="post-title gt-a-link">Code-Push使用经验(仅iOS)</a>
-                    </div>
-                </div>
-            
-            
-                <div class="next-post">
-                    <div class="next gt-c-content-color-first">
-                        下一篇：<a href="/2016/04/25/firstblog/" 
-                            class="post-title gt-a-link">第一篇博客</a>
-                    </div>
-                </div>
-            
-        </div>
-    
-    
-</div>
-                <div class="site-footer gt-c-content-color-first">
-    <div class="footer-main">
-        <!-- 建议保留版权信息或者添加主题信息到友链，感谢您的理解 -->
-        <!-- 文件位置：layout/_includes/footer.ejs -->
-        <span style="text-align: right; float: right;">Theme <a 
-            href="https://github.com/renbaoshuo/hexo-theme-pure" target="_blank">Pure</a> | Powered by <a 
-            href="https://hexo.io" target="_blank">Hexo</a></span>
-        <span style="text-align: left;">Footer HTML
-</span>
-    </div>
+            <div class="post-nav-item">
+                <a href="/2016/05/11/code-push-tutorial/" rel="next" title="Code-Push使用经验(仅iOS)">
+                  Code-Push使用经验(仅iOS) <i class="fa fa-chevron-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
 </div>
 
-            </div>
-        </div>
-    </body>
+
+
+
+
+<script src="/js/comments.js"></script>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+
+<div class="copyright">
+  &copy; 
+  <span itemprop="copyrightYear">2021</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Tu Fei</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/muse/" class="theme-link" rel="noopener" target="_blank">NexT.Muse</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/animejs@3.2.1/lib/anime.min.js"></script>
+<script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/schemes/muse.js"></script><script src="/js/next-boot.js"></script>
+
+  
+
+
+
+
+
+
+  
+
+
+
+
+
+</body>
 </html>
